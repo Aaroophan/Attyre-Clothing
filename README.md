@@ -7,7 +7,7 @@ Attyre is a modern e-commerce application built for small-to-medium clothing bus
 - **Frontend**: Next.js 16 with React 19
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS v4
-- **Database**: MongoDB (configured for setup)
+- **Database**: MongoDB with the official native Node.js driver
 - **Authentication**: Session-based (to be configured)
 - **Linting**: ESLint with Next.js configuration
 
@@ -44,8 +44,10 @@ attyre-clothing/
 │   ├── page.tsx             # Home page
 │   └── globals.css          # Global styles
 ├── components/              # Reusable React components
-├── lib/                     # Utilities and constants
-│   └── constants.ts         # App constants
+├── lib/                     # Utilities, constants, and database access
+│   ├── constants.ts         # App constants
+│   ├── mongodb.ts           # MongoDB native driver connection
+│   └── db/                  # Collection helpers and data access functions
 ├── types/                   # TypeScript type definitions
 ├── utils/                   # Helper functions
 ├── data/                    # Seed data and sample content
@@ -87,6 +89,7 @@ attyre-clothing/
    ```
    Then update `.env.local` with your configuration:
    - `MONGODB_URI`: Your MongoDB connection string
+   - `MONGODB_DB`: MongoDB database name, defaults to `attyre`
    - `SESSION_SECRET`: Generate with `openssl rand -base64 32`
    - `ADMIN_EMAIL`: Admin account email
    - `ADMIN_PASSWORD`: Admin account password
@@ -110,10 +113,46 @@ Create a `.env.local` file in the root directory. See `.env.example` for referen
 
 ```
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/attyre
+MONGODB_DB=attyre
 SESSION_SECRET=<generated-secret-key>
 ADMIN_EMAIL=admin@attyre.com
 ADMIN_PASSWORD=SecurePassword123!
 NODE_ENV=development
+```
+
+
+## MongoDB Database Layer
+
+Issue 03 adds the MongoDB foundation using the official native MongoDB Node.js driver. No Prisma or Mongoose is used.
+
+Main files:
+
+```
+lib/mongodb.ts              # Shared MongoDB client connection helper
+lib/db/collections.ts       # Database and collection helpers
+lib/db/object-id.ts         # ObjectId conversion and serialization helpers
+lib/db/products.ts          # Product data access helpers
+lib/db/categories.ts        # Category data access helpers
+lib/db/orders.ts            # Order data access helpers
+lib/db/users.ts             # User data access helpers
+app/api/health/database     # Runtime database connection check
+types/database.ts           # MongoDB document interfaces
+```
+
+Runtime database check:
+
+```bash
+curl http://localhost:3000/api/health/database
+```
+
+Expected successful response:
+
+```json
+{
+  "ok": true,
+  "database": "attyre",
+  "message": "MongoDB connection successful."
+}
 ```
 
 ## Development Guidelines
@@ -169,11 +208,14 @@ Reusable UI components:
 - Common UI components (buttons, cards, forms, etc.)
 
 ### `/lib`
-Configuration and utilities:
-- Database connections
-- API clients
-- Constants
-- Helper functions
+Configuration, constants, and database utilities:
+- MongoDB native driver connection
+- Collection name constants
+- Product data access helpers
+- Category data access helpers
+- User data access helpers
+- Order data access helpers
+- ObjectId conversion and document serialization helpers
 
 ### `/types`
 Shared TypeScript interfaces:
