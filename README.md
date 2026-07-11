@@ -222,6 +222,46 @@ components/storefront/ShopControls.tsx    # Search/filter/sort controls
 lib/db/products.ts                        # MongoDB product filtering helper
 ```
 
+
+
+## Product Details, Variant Selection, and Stock Awareness
+
+Issue 07 expands `/shop/[slug]` into a full product details page. The page loads the selected product by slug, displays full product information, and provides customer-facing controls for simple clothing variants.
+
+Implemented product details features:
+
+- dynamic product detail pages using `/shop/[slug]`
+- MongoDB-backed product lookup with seed-data fallback
+- product image, name, description, category, SKU, date added, price, and sale price display
+- size selector
+- color selector
+- stock-aware quantity selector
+- disabled Add to Cart button for out-of-stock products
+- validation messages when size, color, or quantity is invalid
+- related products from the same category
+- product-specific metadata for the browser title and description
+- responsive two-column desktop layout with stacked mobile layout
+
+Important files:
+
+```
+app/shop/[slug]/page.tsx                         # Full product details route
+components/storefront/ProductPurchasePanel.tsx   # Client-side size/color/quantity selector
+components/storefront/ProductGrid.tsx            # Related product display
+lib/db/products.ts                               # Product lookup and related product loading
+```
+
+Useful test URLs:
+
+```
+/shop/classic-white-shirt
+/shop/streetwear-jacket
+/shop/pleated-skirt
+/shop/not-a-real-product
+```
+
+`pleated-skirt` is intentionally seeded with zero stock, so it can be used to test the out-of-stock UI and disabled Add to Cart behavior.
+
 ## Development Guidelines
 
 ### Path Aliases
