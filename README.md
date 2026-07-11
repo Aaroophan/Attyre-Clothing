@@ -188,6 +188,40 @@ Expected successful response:
 }
 ```
 
+
+## Product Listing, Search, Filter, and Sort
+
+Issue 06 expands `/shop` into a functional customer product listing page backed by MongoDB. The page reads URL query parameters and supports:
+
+```
+/shop
+/shop?category=men
+/shop?q=shirt
+/shop?sort=price-asc
+/shop?category=sale&q=jacket&sort=price-desc
+```
+
+Implemented shop features:
+
+- MongoDB-backed active product listing
+- category filter pills with product counts
+- search by product name/description
+- sort by newest, price low to high, price high to low, and name A to Z
+- sale price and original price display
+- In Stock, Low Stock, and Out of Stock labels
+- empty-state handling for no matching products
+- fallback to bundled seed data when MongoDB is unavailable
+
+Important files:
+
+```
+app/shop/page.tsx                         # Product listing route
+components/storefront/ProductCard.tsx     # Reusable product card
+components/storefront/ProductGrid.tsx     # Responsive product grid and empty state
+components/storefront/ShopControls.tsx    # Search/filter/sort controls
+lib/db/products.ts                        # MongoDB product filtering helper
+```
+
 ## Development Guidelines
 
 ### Path Aliases
@@ -292,7 +326,7 @@ The application can be deployed to Vercel, AWS, or any Node.js hosting provider.
 
 ## Future Enhancements
 
-- [ ] Database integration (MongoDB)
+- [x] Database integration (MongoDB)
 - [ ] User authentication and authorization
 - [ ] Shopping cart with local/database persistence
 - [ ] Payment gateway integration (Stripe, etc.)
@@ -300,7 +334,7 @@ The application can be deployed to Vercel, AWS, or any Node.js hosting provider.
 - [ ] Email notifications
 - [ ] Product reviews and ratings
 - [ ] Wishlist functionality
-- [ ] Inventory tracking
+- [x] Basic product stock labels
 - [ ] Order tracking system
 
 ## License
@@ -325,5 +359,5 @@ For issues, questions, or suggestions, please open an issue on GitHub or contact
 
 ---
 
-**Last Updated**: July 2024
-**Version**: 0.1.0 (Prototype UI and Foundation)
+**Last Updated**: July 2026
+**Version**: 0.1.0 (Product Listing Prototype)

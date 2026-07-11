@@ -16,6 +16,10 @@ async function productsCollection() {
   return getCollection<ProductDocument>(COLLECTIONS.products);
 }
 
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 export function buildProductFilter(options: ProductListOptions = {}): Filter<ProductDocument> {
   const filter: Filter<ProductDocument> = {};
 
@@ -32,9 +36,11 @@ export function buildProductFilter(options: ProductListOptions = {}): Filter<Pro
   }
 
   if (options.search) {
+    const search = escapeRegExp(options.search);
+
     filter.$or = [
-      { name: { $regex: options.search, $options: 'i' } },
-      { description: { $regex: options.search, $options: 'i' } },
+      { name: { $regex: search, $options: 'i' } },
+      { description: { $regex: search, $options: 'i' } },
     ];
   }
 
