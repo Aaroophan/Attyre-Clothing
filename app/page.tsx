@@ -1,5 +1,6 @@
 import { sampleCategories, sampleProducts } from '@/data/seed';
-import { formatPrice, CURRENCY } from '@/utils';
+import { formatPrice } from '@/utils';
+import { CURRENCY } from '@/lib/constants';
 
 export default function Home() {
   return (
