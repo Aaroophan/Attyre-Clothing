@@ -106,6 +106,8 @@ attyre-clothing/
 - `npm run build` - Build for production
 - `npm start` - Start production server
 - `npm run lint` - Run ESLint
+- `npm run seed` - Seed MongoDB with demo categories, products, and an admin user
+- `npm run db:seed` - Alias for `npm run seed`
 
 ## Environment Variables
 
@@ -120,6 +122,37 @@ ADMIN_PASSWORD=SecurePassword123!
 NODE_ENV=development
 ```
 
+
+
+## Seed Data and Demo Catalog
+
+Issue 04 adds an idempotent MongoDB seed script for the initial Attyre catalog. The script creates indexes, upserts demo categories, upserts at least 12 clothing products, and creates/updates the default admin user with a hashed password.
+
+Seed command:
+
+```bash
+npm run seed
+```
+
+Seeded collections:
+
+```
+users        # default admin user
+categories   # Men, Women, Accessories, New Arrivals, Sale
+products     # 12 realistic clothing/accessory products
+orders       # index prepared for future order creation
+```
+
+The seed script is safe to re-run. It matches records by stable values such as category slug, product slug, and admin email, then updates those records instead of blindly duplicating data. It also marks seeded records with `seeded: true` and `seedSource: attyre-issue-04-demo-catalog` for evidence and later inspection in MongoDB Atlas.
+
+Default admin credentials are read from environment variables:
+
+```
+ADMIN_EMAIL=admin@attyre.com
+ADMIN_PASSWORD=SecurePassword123!
+```
+
+The password is stored as a bcrypt hash, not as plain text.
 
 ## MongoDB Database Layer
 
