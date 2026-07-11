@@ -368,7 +368,7 @@ The application can be deployed to Vercel, AWS, or any Node.js hosting provider.
 
 - [x] Database integration (MongoDB)
 - [ ] User authentication and authorization
-- [ ] Shopping cart with local/database persistence
+- [x] Shopping cart with localStorage persistence
 - [ ] Payment gateway integration (Stripe, etc.)
 - [ ] Admin dashboard with analytics
 - [ ] Email notifications
@@ -400,4 +400,70 @@ For issues, questions, or suggestions, please open an issue on GitHub or contact
 ---
 
 **Last Updated**: July 2026
-**Version**: 0.1.0 (Product Listing Prototype)
+**Version**: 0.1.0 (Cart Prototype)
+
+## Issue 08 - Cart System Using Local Storage
+
+Issue 08 adds the customer shopping cart flow for Attyre.
+
+### Added Cart Features
+
+- Customer can add products to the cart from the product details page.
+- Selected size and color are stored with each cart item.
+- Same product with the same size/color increases quantity instead of creating a duplicate row.
+- Same product with a different size/color is treated as a separate cart item.
+- Cart data persists in browser `localStorage` across page refreshes.
+- Header cart count updates after cart changes.
+- Cart page supports quantity updates.
+- Cart page supports item removal.
+- Cart page supports clearing the whole cart.
+- Cart totals update automatically.
+- Quantity updates are limited by product stock.
+- Empty cart shows a friendly empty state.
+- Checkout button appears only when the cart has items.
+
+### Cart Routes
+
+```text
+/cart
+/checkout
+```
+
+`/checkout` is currently a placeholder page so the cart flow does not lead to a 404. The full Cash on Delivery checkout form and MongoDB order creation will be implemented in Issue 09.
+
+### Cart Storage
+
+The cart is stored in browser local storage under:
+
+```text
+attyre-cart-items
+```
+
+The cart intentionally uses browser storage instead of database storage at this stage to keep the RAD MVP simple and fast to test.
+
+### Testing Issue 08
+
+```bash
+npm install
+npm run seed
+npm run dev
+```
+
+Then test:
+
+```text
+http://localhost:3000/shop/classic-white-shirt
+http://localhost:3000/cart
+```
+
+Manual checks:
+
+- Add one product to cart.
+- Refresh the browser and confirm the cart still contains the item.
+- Add the same product with the same size/color and confirm quantity increases.
+- Add the same product with a different size/color and confirm it creates a separate row.
+- Increase and decrease cart quantity.
+- Confirm quantity cannot exceed available stock.
+- Remove one item.
+- Clear the cart.
+- Confirm empty cart state appears.

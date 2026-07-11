@@ -1,6 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
+import { useCart } from '@/components/cart/CartProvider';
 import { CURRENCY } from '@/lib/constants';
 import { cn, formatPrice } from '@/utils';
 
@@ -21,21 +23,6 @@ interface SelectionErrors {
   color?: string;
   quantity?: string;
 }
-
-interface PreparedCartItem {
-  productId: string;
-  slug: string;
-  name: string;
-  image: string;
-  size?: string;
-  color?: string;
-  unitPrice: number;
-  quantity: number;
-  stockLimit: number;
-  preparedAt: string;
-}
-
-const PREPARED_CART_KEY = 'attyre-prepared-cart-item';
 
 function clampQuantity(value: number, stock: number): number {
   if (stock <= 0) {
@@ -65,6 +52,7 @@ export function ProductPurchasePanel({
   const [quantity, setQuantity] = useState(stock > 0 ? 1 : 0);
   const [errors, setErrors] = useState<SelectionErrors>({});
   const [successMessage, setSuccessMessage] = useState('');
+  const { addItem, getItemQuantity } = useCart();
 
   const displayPrice = salePrice ?? price;
   const lineTotal = useMemo(() => displayPrice * quantity, [displayPrice, quantity]);
@@ -104,7 +92,7 @@ export function ProductPurchasePanel({
     setErrors((current) => ({ ...current, quantity: undefined }));
   }
 
-  function handleAddToCartPreview() {
+  function handleAddToCart() {
     const nextErrors = validateSelection();
     setErrors(nextErrors);
     setSuccessMessage('');
@@ -113,7 +101,23 @@ export function ProductPurchasePanel({
       return;
     }
 
-    const preparedItem: PreparedCartItem = {
+    const cartQuantityForVariant = getItemQuantity(
+      productId,
+      selectedSize || undefined,
+      selectedColor || undefined,
+    );
+    const remainingStockForVariant = stock - cartQuantityForVariant;
+
+    if (quantity > remainingStockForVariant) {
+      setErrors({
+        quantity: remainingStockForVariant > 0
+          ? `Only ${remainingStockForVariant} more unit${remainingStockForVariant === 1 ? '' : 's'} can be added for this option.`
+          : 'This selected option is already at the available stock limit in your cart.',
+      });
+      return;
+    }
+
+    addItem({
       productId,
       slug,
       name,
@@ -123,11 +127,9 @@ export function ProductPurchasePanel({
       unitPrice: displayPrice,
       quantity,
       stockLimit: stock,
-      preparedAt: new Date().toISOString(),
-    };
+    });
 
-    globalThis.localStorage.setItem(PREPARED_CART_KEY, JSON.stringify(preparedItem));
-    setSuccessMessage('Product options selected successfully. Full cart persistence will be completed in Issue 08.');
+    setSuccessMessage('Added to cart. You can review the cart or continue shopping.');
   }
 
   return (
@@ -277,7 +279,7 @@ export function ProductPurchasePanel({
 
       <button
         type="button"
-        onClick={handleAddToCartPreview}
+        onClick={handleAddToCart}
         disabled={isOutOfStock}
         className="mt-8 inline-flex w-full items-center justify-center rounded-full bg-primary-darker px-6 py-4 text-sm font-black uppercase tracking-[0.16em] text-white transition hover:bg-primary disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500"
       >
@@ -286,7 +288,10 @@ export function ProductPurchasePanel({
 
       {successMessage ? (
         <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold leading-6 text-emerald-800">
-          {successMessage}
+          <p>{successMessage}</p>
+          <Link href="/cart" className="mt-3 inline-flex font-black text-emerald-900 underline underline-offset-4">
+            View cart
+          </Link>
         </div>
       ) : null}
 

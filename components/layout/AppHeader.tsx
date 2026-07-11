@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import { useCart } from '@/components/cart/CartProvider';
 import { SITE_NAME } from '@/lib/constants';
 import { cn } from '@/utils';
 
@@ -33,6 +34,7 @@ function isActiveLink(pathname: string, href: string): boolean {
 export function AppHeader() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { totals } = useCart();
 
   return (
     <header className="sticky top-0 z-50 border-b border-primary/10 bg-white/95 shadow-sm backdrop-blur">
@@ -95,7 +97,7 @@ export function AppHeader() {
                 >
                   {item.label}
                   {isCart ? (
-                    <span className="ml-2 rounded-full bg-primary px-2 py-0.5 text-xs text-white">0</span>
+                    <span className="ml-2 rounded-full bg-primary px-2 py-0.5 text-xs text-white">{totals.itemCount}</span>
                   ) : null}
                 </Link>
               );
@@ -137,7 +139,14 @@ export function AppHeader() {
                         : 'text-gray-700 hover:bg-gray-100'
                     )}
                   >
-                    {item.label}
+                    <span className="flex items-center justify-between gap-3">
+                      <span>{item.label}</span>
+                      {item.href === '/cart' ? (
+                        <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-black text-white">
+                          {totals.itemCount}
+                        </span>
+                      ) : null}
+                    </span>
                   </Link>
                 );
               })}

@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { CartProvider } from '@/components/cart/CartProvider';
 import { AppFooter, AppHeader } from '@/components/layout';
 import { SITE_DESCRIPTION, SITE_NAME } from '@/lib/constants';
 import './globals.css';
@@ -39,11 +40,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-[#f7fbfd] text-dark antialiased">
-        <div className="flex min-h-screen flex-col">
-          <AppHeader />
-          <main className="flex-1">{children}</main>
-          <AppFooter />
-        </div>
+        <CartProvider>
+          <div className="flex min-h-screen flex-col">
+            <AppHeader />
+            <main className="flex-1">{children}</main>
+            <AppFooter />
+          </div>
+        </CartProvider>
       </body>
     </html>
   );
