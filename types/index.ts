@@ -106,3 +106,20 @@ export interface IAdminUser {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export type {
+  CategoryDocument,
+  CreateCategoryInput,
+  CreateOrderInput,
+  CreateProductInput,
+  CreateUserInput,
+  OrderCustomerInfo,
+  OrderDocument,
+  OrderItemDocument,
+  OrderStatus,
+  PaymentMethod,
+  PaymentStatus,
+  ProductDocument,
+  UserDocument,
+  UserRole,
+} from './database';

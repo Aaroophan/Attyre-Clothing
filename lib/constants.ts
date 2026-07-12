@@ -4,7 +4,7 @@
 
 // Site Configuration
 export const SITE_NAME = 'Attyre';
-export const SITE_DESCRIPTION = 'Premium clothing e-commerce platform for style-conscious customers';
+export const SITE_DESCRIPTION = 'Modern clothing e-commerce platform for small-to-medium online fashion businesses';
 
 // API Configuration
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
@@ -47,5 +47,5 @@ export const ORDER_STATUSES = {
 } as const;
 
 // Currency
-export const CURRENCY = 'PKR';
-export const CURRENCY_SYMBOL = 'Rs.';
+export const CURRENCY = 'LKR';
+export const CURRENCY_SYMBOL = 'LKR';

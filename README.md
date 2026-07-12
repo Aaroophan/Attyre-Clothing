@@ -7,7 +7,7 @@ Attyre is a modern e-commerce application built for small-to-medium clothing bus
 - **Frontend**: Next.js 16 with React 19
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS v4
-- **Database**: MongoDB (configured for setup)
+- **Database**: MongoDB with the official native Node.js driver
 - **Authentication**: Session-based (to be configured)
 - **Linting**: ESLint with Next.js configuration
 
@@ -44,8 +44,10 @@ attyre-clothing/
 │   ├── page.tsx             # Home page
 │   └── globals.css          # Global styles
 ├── components/              # Reusable React components
-├── lib/                     # Utilities and constants
-│   └── constants.ts         # App constants
+├── lib/                     # Utilities, constants, and database access
+│   ├── constants.ts         # App constants
+│   ├── mongodb.ts           # MongoDB native driver connection
+│   └── db/                  # Collection helpers and data access functions
 ├── types/                   # TypeScript type definitions
 ├── utils/                   # Helper functions
 ├── data/                    # Seed data and sample content
@@ -87,6 +89,7 @@ attyre-clothing/
    ```
    Then update `.env.local` with your configuration:
    - `MONGODB_URI`: Your MongoDB connection string
+   - `MONGODB_DB`: MongoDB database name, defaults to `attyre`
    - `SESSION_SECRET`: Generate with `openssl rand -base64 32`
    - `ADMIN_EMAIL`: Admin account email
    - `ADMIN_PASSWORD`: Admin account password
@@ -103,6 +106,8 @@ attyre-clothing/
 - `npm run build` - Build for production
 - `npm start` - Start production server
 - `npm run lint` - Run ESLint
+- `npm run seed` - Seed MongoDB with demo categories, products, and an admin user
+- `npm run db:seed` - Alias for `npm run seed`
 
 ## Environment Variables
 
@@ -110,11 +115,152 @@ Create a `.env.local` file in the root directory. See `.env.example` for referen
 
 ```
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/attyre
+MONGODB_DB=attyre
 SESSION_SECRET=<generated-secret-key>
 ADMIN_EMAIL=admin@attyre.com
 ADMIN_PASSWORD=SecurePassword123!
 NODE_ENV=development
 ```
+
+
+
+## Seed Data and Demo Catalog
+
+Issue 04 adds an idempotent MongoDB seed script for the initial Attyre catalog. The script creates indexes, upserts demo categories, upserts at least 12 clothing products, and creates/updates the default admin user with a hashed password.
+
+Seed command:
+
+```bash
+npm run seed
+```
+
+Seeded collections:
+
+```
+users        # default admin user
+categories   # Men, Women, Accessories, New Arrivals, Sale
+products     # 12 realistic clothing/accessory products
+orders       # index prepared for future order creation
+```
+
+The seed script is safe to re-run. It matches records by stable values such as category slug, product slug, and admin email, then updates those records instead of blindly duplicating data. It also marks seeded records with `seeded: true` and `seedSource: attyre-issue-04-demo-catalog` for evidence and later inspection in MongoDB Atlas.
+
+Default admin credentials are read from environment variables:
+
+```
+ADMIN_EMAIL=admin@attyre.com
+ADMIN_PASSWORD=SecurePassword123!
+```
+
+The password is stored as a bcrypt hash, not as plain text.
+
+## MongoDB Database Layer
+
+Issue 03 adds the MongoDB foundation using the official native MongoDB Node.js driver. No Prisma or Mongoose is used.
+
+Main files:
+
+```
+lib/mongodb.ts              # Shared MongoDB client connection helper
+lib/db/collections.ts       # Database and collection helpers
+lib/db/object-id.ts         # ObjectId conversion and serialization helpers
+lib/db/products.ts          # Product data access helpers
+lib/db/categories.ts        # Category data access helpers
+lib/db/orders.ts            # Order data access helpers
+lib/db/users.ts             # User data access helpers
+app/api/health/database     # Runtime database connection check
+types/database.ts           # MongoDB document interfaces
+```
+
+Runtime database check:
+
+```bash
+curl http://localhost:3000/api/health/database
+```
+
+Expected successful response:
+
+```json
+{
+  "ok": true,
+  "database": "attyre",
+  "message": "MongoDB connection successful."
+}
+```
+
+
+## Product Listing, Search, Filter, and Sort
+
+Issue 06 expands `/shop` into a functional customer product listing page backed by MongoDB. The page reads URL query parameters and supports:
+
+```
+/shop
+/shop?category=men
+/shop?q=shirt
+/shop?sort=price-asc
+/shop?category=sale&q=jacket&sort=price-desc
+```
+
+Implemented shop features:
+
+- MongoDB-backed active product listing
+- category filter pills with product counts
+- search by product name/description
+- sort by newest, price low to high, price high to low, and name A to Z
+- sale price and original price display
+- In Stock, Low Stock, and Out of Stock labels
+- empty-state handling for no matching products
+- fallback to bundled seed data when MongoDB is unavailable
+
+Important files:
+
+```
+app/shop/page.tsx                         # Product listing route
+components/storefront/ProductCard.tsx     # Reusable product card
+components/storefront/ProductGrid.tsx     # Responsive product grid and empty state
+components/storefront/ShopControls.tsx    # Search/filter/sort controls
+lib/db/products.ts                        # MongoDB product filtering helper
+```
+
+
+
+## Product Details, Variant Selection, and Stock Awareness
+
+Issue 07 expands `/shop/[slug]` into a full product details page. The page loads the selected product by slug, displays full product information, and provides customer-facing controls for simple clothing variants.
+
+Implemented product details features:
+
+- dynamic product detail pages using `/shop/[slug]`
+- MongoDB-backed product lookup with seed-data fallback
+- product image, name, description, category, SKU, date added, price, and sale price display
+- size selector
+- color selector
+- stock-aware quantity selector
+- disabled Add to Cart button for out-of-stock products
+- validation messages when size, color, or quantity is invalid
+- related products from the same category
+- product-specific metadata for the browser title and description
+- responsive two-column desktop layout with stacked mobile layout
+
+Important files:
+
+```
+app/shop/[slug]/page.tsx                         # Full product details route
+components/storefront/ProductPurchasePanel.tsx   # Client-side size/color/quantity selector
+components/storefront/ProductGrid.tsx            # Related product display
+lib/db/products.ts                               # Product lookup and related product loading
+```
+
+Useful test URLs:
+
+```
+/shop/classic-white-shirt
+/shop/streetwear-jacket
+/shop/pleated-skirt
+/shop/not-a-real-product
+```
+
+`pleated-skirt` is intentionally seeded with zero stock, so it can be used to test the out-of-stock UI and disabled Add to Cart behavior.
 
 ## Development Guidelines
 
@@ -169,11 +315,14 @@ Reusable UI components:
 - Common UI components (buttons, cards, forms, etc.)
 
 ### `/lib`
-Configuration and utilities:
-- Database connections
-- API clients
-- Constants
-- Helper functions
+Configuration, constants, and database utilities:
+- MongoDB native driver connection
+- Collection name constants
+- Product data access helpers
+- Category data access helpers
+- User data access helpers
+- Order data access helpers
+- ObjectId conversion and document serialization helpers
 
 ### `/types`
 Shared TypeScript interfaces:
@@ -217,15 +366,15 @@ The application can be deployed to Vercel, AWS, or any Node.js hosting provider.
 
 ## Future Enhancements
 
-- [ ] Database integration (MongoDB)
+- [x] Database integration (MongoDB)
 - [ ] User authentication and authorization
-- [ ] Shopping cart with local/database persistence
+- [x] Shopping cart with localStorage persistence
 - [ ] Payment gateway integration (Stripe, etc.)
 - [ ] Admin dashboard with analytics
 - [ ] Email notifications
 - [ ] Product reviews and ratings
 - [ ] Wishlist functionality
-- [ ] Inventory tracking
+- [x] Basic product stock labels
 - [ ] Order tracking system
 
 ## License
@@ -250,5 +399,71 @@ For issues, questions, or suggestions, please open an issue on GitHub or contact
 
 ---
 
-**Last Updated**: July 2024
-**Version**: 0.1.0 (Prototype UI and Foundation)
+**Last Updated**: July 2026
+**Version**: 0.1.0 (Cart Prototype)
+
+## Issue 08 - Cart System Using Local Storage
+
+Issue 08 adds the customer shopping cart flow for Attyre.
+
+### Added Cart Features
+
+- Customer can add products to the cart from the product details page.
+- Selected size and color are stored with each cart item.
+- Same product with the same size/color increases quantity instead of creating a duplicate row.
+- Same product with a different size/color is treated as a separate cart item.
+- Cart data persists in browser `localStorage` across page refreshes.
+- Header cart count updates after cart changes.
+- Cart page supports quantity updates.
+- Cart page supports item removal.
+- Cart page supports clearing the whole cart.
+- Cart totals update automatically.
+- Quantity updates are limited by product stock.
+- Empty cart shows a friendly empty state.
+- Checkout button appears only when the cart has items.
+
+### Cart Routes
+
+```text
+/cart
+/checkout
+```
+
+`/checkout` is currently a placeholder page so the cart flow does not lead to a 404. The full Cash on Delivery checkout form and MongoDB order creation will be implemented in Issue 09.
+
+### Cart Storage
+
+The cart is stored in browser local storage under:
+
+```text
+attyre-cart-items
+```
+
+The cart intentionally uses browser storage instead of database storage at this stage to keep the RAD MVP simple and fast to test.
+
+### Testing Issue 08
+
+```bash
+npm install
+npm run seed
+npm run dev
+```
+
+Then test:
+
+```text
+http://localhost:3000/shop/classic-white-shirt
+http://localhost:3000/cart
+```
+
+Manual checks:
+
+- Add one product to cart.
+- Refresh the browser and confirm the cart still contains the item.
+- Add the same product with the same size/color and confirm quantity increases.
+- Add the same product with a different size/color and confirm it creates a separate row.
+- Increase and decrease cart quantity.
+- Confirm quantity cannot exceed available stock.
+- Remove one item.
+- Clear the cart.
+- Confirm empty cart state appears.
