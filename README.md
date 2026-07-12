@@ -765,3 +765,84 @@ components/admin/index.ts             # Admin component exports
 lib/db/products.ts                    # Product count and low-stock helpers
 lib/db/orders.ts                      # Order counts, sales total, and recent order helpers
 ```
+
+## Issue 13 - Admin Product Management: Create, Read, Update, and Deactivate Products
+
+Issue 13 turns the protected `/admin/products` placeholder into a working product management area for the Attyre store owner.
+
+Implemented product management features:
+
+- MongoDB-backed admin product listing
+- product search by name or description
+- product category filter
+- active/inactive product status filter
+- product create form
+- product edit form
+- stock update through the edit form
+- sale price and regular price management
+- category assignment from active MongoDB categories
+- product image URL management
+- comma-separated size and color variant editing
+- featured product toggle
+- active product toggle
+- soft deactivation/reactivation without deleting order history
+- server-side validation for required fields and invalid price/stock values
+- duplicate slug protection
+- customer shop visibility update after product activation/deactivation
+
+Admin product routes:
+
+```text
+/admin/products             # product list, search, filter, status actions
+/admin/products/new         # create product
+/admin/products/[id]/edit   # edit product, stock, pricing, visibility, variants
+```
+
+Admin product API routes:
+
+```text
+POST  /api/admin/products        # create product
+PUT   /api/admin/products/[id]   # update product
+PATCH /api/admin/products/[id]   # deactivate or reactivate product
+```
+
+Manual testing flow:
+
+```bash
+npm run seed
+npm run dev
+```
+
+Then test:
+
+```text
+/login?next=/admin              # log in as admin
+/admin/products                 # verify product table loads
+/admin/products/new             # create a new product
+/admin/products/[id]/edit       # edit existing product details and stock
+/shop                           # confirm active product changes appear in storefront
+```
+
+Recommended Issue 13 checks:
+
+1. Create a product with valid data and confirm it appears in `/admin/products`.
+2. Open `/shop` and confirm the active created product appears to customers.
+3. Edit the product price, stock, sale price, image URL, colors, sizes, and featured setting.
+4. Deactivate the product from `/admin/products` and confirm it no longer appears in `/shop`.
+5. Reactivate the product and confirm it appears again.
+6. Try creating a product with a negative price or stock and confirm validation errors appear.
+7. Try reusing an existing slug and confirm duplicate slug validation appears.
+
+Important files:
+
+```text
+app/admin/products/page.tsx                  # product list, filters, status actions
+app/admin/products/new/page.tsx              # create product page
+app/admin/products/[id]/edit/page.tsx        # edit product page
+app/api/admin/products/route.ts              # admin create product API
+app/api/admin/products/[id]/route.ts         # admin update/status API
+components/admin/products/ProductForm.tsx    # reusable create/edit form
+components/admin/products/ProductStatusButton.tsx # deactivate/reactivate client action
+lib/admin-product-validation.ts              # shared product validation and payload normalization
+lib/db/products.ts                           # create/update/list/status database helpers
+```

@@ -5,6 +5,7 @@ import { tryObjectId } from './object-id';
 
 export interface ProductListOptions {
   activeOnly?: boolean;
+  includeInactive?: boolean;
   categorySlug?: string;
   featuredOnly?: boolean;
   search?: string;
@@ -23,7 +24,7 @@ function escapeRegExp(value: string): string {
 export function buildProductFilter(options: ProductListOptions = {}): Filter<ProductDocument> {
   const filter: Filter<ProductDocument> = {};
 
-  if (options.activeOnly ?? true) {
+  if (options.activeOnly ?? !options.includeInactive) {
     filter.active = true;
   }
 
@@ -63,6 +64,11 @@ export async function listProducts(options: ProductListOptions = {}): Promise<Pr
 export async function findProductBySlug(slug: string): Promise<ProductDocument | null> {
   const collection = await productsCollection();
   return collection.findOne({ slug, active: true });
+}
+
+export async function findAnyProductBySlug(slug: string): Promise<ProductDocument | null> {
+  const collection = await productsCollection();
+  return collection.findOne({ slug });
 }
 
 export async function findProductById(id: string): Promise<ProductDocument | null> {
@@ -119,6 +125,22 @@ export async function deactivateProduct(id: string): Promise<boolean> {
   const result = await collection.updateOne(
     { _id: objectId },
     { $set: { active: false, updatedAt: new Date() } },
+  );
+
+  return result.modifiedCount === 1;
+}
+
+export async function reactivateProduct(id: string): Promise<boolean> {
+  const objectId = tryObjectId(id);
+
+  if (!objectId) {
+    return false;
+  }
+
+  const collection = await productsCollection();
+  const result = await collection.updateOne(
+    { _id: objectId },
+    { $set: { active: true, updatedAt: new Date() } },
   );
 
   return result.modifiedCount === 1;

@@ -32,6 +32,8 @@ export default [
         process: 'readonly',
         Buffer: 'readonly',
         React: 'readonly',
+        fetch: 'readonly',
+        window: 'readonly',
       },
     },
     rules: {
