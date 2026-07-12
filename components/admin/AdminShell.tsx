@@ -30,6 +30,11 @@ const adminNavItems = [
     description: 'Store sections',
   },
   {
+    href: '/admin/inventory',
+    label: 'Inventory',
+    description: 'Stock control',
+  },
+  {
     href: '/admin/orders',
     label: 'Orders',
     description: 'COD processing',

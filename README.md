@@ -974,3 +974,58 @@ Notes:
 - Cash on Delivery payment status remains visible separately from order status.
 - Cancelling an order does not automatically restore stock in this minimal RAD version.
 - Stock changes after cancellation can be handled manually through product management.
+
+## Issue 16 - Inventory and Stock Control
+
+Issue 16 adds a protected inventory workflow for monitoring and updating product stock without opening the full product editor.
+
+Implemented routes:
+
+```text
+/admin/inventory
+PATCH /api/admin/inventory/[id]
+```
+
+Inventory features:
+
+- Dedicated admin inventory page with stock summary cards.
+- Quick filtering by all stock, in stock, low stock, and out of stock.
+- Quick filtering by active, inactive, or all products.
+- Search by product name or description.
+- Inline stock update form for each product.
+- Low-stock threshold of 5 units.
+- Product-level stock only, matching the minimal RAD scope.
+- Customer product cards and product details continue to show stock status.
+- Cart quantity controls still prevent customers from exceeding the known stock limit.
+- Checkout still revalidates stock directly from MongoDB before creating an order.
+- Checkout stock reduction still uses MongoDB updates so product stock decreases after successful order placement.
+
+Testing flow:
+
+```bash
+npm install
+npm run seed
+npm run dev
+```
+
+1. Log in as admin at `/login?next=/admin/inventory`.
+2. Open `/admin/inventory` and verify the inventory summary cards load.
+3. Filter by Low stock and Out of stock.
+4. Update a product stock value from the inline stock form.
+5. Confirm the changed value appears on `/admin/inventory` and `/admin/products`.
+6. Open the customer product page and confirm stock availability text changed.
+7. Set stock to 0 and confirm Add to Cart is disabled on the product details page.
+8. Set stock back above 0 and place a Cash on Delivery order.
+9. Confirm the product stock decreases after the order is placed.
+10. Check MongoDB `products` collection to confirm the stock field changed.
+
+Important files:
+
+```text
+app/admin/inventory/page.tsx                  # admin inventory table, filters, summary cards
+app/api/admin/inventory/[id]/route.ts         # protected stock update API
+components/admin/inventory/InventoryStockForm.tsx # inline stock editing component
+lib/inventory.ts                              # shared inventory status/threshold helpers
+lib/db/products.ts                            # stock filter and stock update helpers
+components/admin/AdminShell.tsx               # inventory link in admin navigation
+```

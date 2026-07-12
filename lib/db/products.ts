@@ -4,6 +4,8 @@ import { COLLECTIONS, getCollection } from './collections';
 import { tryObjectId } from './object-id';
 
 export interface ProductListOptions {
+  stockStatus?: 'all' | 'in' | 'low' | 'out';
+  lowStockThreshold?: number;
   activeOnly?: boolean;
   includeInactive?: boolean;
   categorySlug?: string;
@@ -34,6 +36,22 @@ export function buildProductFilter(options: ProductListOptions = {}): Filter<Pro
 
   if (options.featuredOnly) {
     filter.featured = true;
+  }
+
+  if (options.stockStatus && options.stockStatus !== 'all') {
+    const threshold = options.lowStockThreshold ?? 5;
+
+    if (options.stockStatus === 'out') {
+      filter.stock = { $lte: 0 };
+    }
+
+    if (options.stockStatus === 'low') {
+      filter.stock = { $gt: 0, $lte: threshold };
+    }
+
+    if (options.stockStatus === 'in') {
+      filter.stock = { $gt: threshold };
+    }
   }
 
   if (options.search) {
@@ -144,6 +162,41 @@ export async function reactivateProduct(id: string): Promise<boolean> {
   );
 
   return result.modifiedCount === 1;
+}
+
+
+export async function updateProductStock(id: string, stock: number): Promise<ProductDocument | null> {
+  const objectId = tryObjectId(id);
+
+  if (!objectId || !Number.isInteger(stock) || stock < 0) {
+    return null;
+  }
+
+  const collection = await productsCollection();
+  const result = await collection.findOneAndUpdate(
+    { _id: objectId },
+    { $set: { stock, updatedAt: new Date() } },
+    { returnDocument: 'after' },
+  );
+
+  return result;
+}
+
+export async function adjustProductStock(id: string, adjustment: number): Promise<ProductDocument | null> {
+  const objectId = tryObjectId(id);
+
+  if (!objectId || !Number.isInteger(adjustment) || adjustment === 0) {
+    return null;
+  }
+
+  const collection = await productsCollection();
+  const result = await collection.findOneAndUpdate(
+    { _id: objectId, stock: { $gte: Math.max(0, -adjustment) } },
+    { $inc: { stock: adjustment }, $set: { updatedAt: new Date() } },
+    { returnDocument: 'after' },
+  );
+
+  return result;
 }
 
 export async function countActiveProducts(): Promise<number> {

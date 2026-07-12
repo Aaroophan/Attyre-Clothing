@@ -151,7 +151,7 @@ export default async function AdminDashboardPage() {
           title="Low stock"
           value={lowStockCount.toString()}
           description="Active products with stock at or below 5 units and needing attention."
-          href="/admin/products"
+          href="/admin/inventory?stock=low"
           tone={lowStockCount > 0 ? 'amber' : 'emerald'}
           icon={<StockIcon />}
         />
