@@ -1,52 +1,30 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
+import { OrderStatusBadge, OrderStatusUpdateForm, PaymentStatusBadge } from '@/components/admin/orders';
 import { CURRENCY } from '@/lib/constants';
 import { findOrderById } from '@/lib/db/orders';
+import { objectIdToString } from '@/lib/db/object-id';
+import { orderStatusLabel, paymentStatusLabel } from '@/lib/order-status';
 import { formatDate, formatPrice } from '@/utils';
-import type { OrderStatus, PaymentStatus } from '@/types/database';
 
 export const dynamic = 'force-dynamic';
 
-interface AdminOrderPreviewPageProps {
+interface AdminOrderPageProps {
   params: Promise<{ id: string }>;
 }
 
-function labelStatus(status: OrderStatus | PaymentStatus): string {
-  return status
-    .split('-')
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ');
-}
-
-function statusBadgeClass(status: OrderStatus): string {
-  switch (status) {
-    case 'pending':
-      return 'border-amber-200 bg-amber-50 text-amber-700';
-    case 'processing':
-      return 'border-sky-200 bg-sky-50 text-sky-700';
-    case 'shipped':
-      return 'border-indigo-200 bg-indigo-50 text-indigo-700';
-    case 'delivered':
-      return 'border-emerald-200 bg-emerald-50 text-emerald-700';
-    case 'cancelled':
-      return 'border-red-200 bg-red-50 text-red-700';
-    default:
-      return 'border-slate-200 bg-slate-50 text-slate-700';
-  }
-}
-
-export async function generateMetadata({ params }: AdminOrderPreviewPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: AdminOrderPageProps): Promise<Metadata> {
   const { id } = await params;
   const order = await findOrderById(id);
 
   return {
     title: order ? `Admin Order ${order.orderNumber}` : 'Admin Order',
-    description: 'Protected Attyre admin order preview.',
+    description: 'Protected Attyre admin order management page.',
   };
 }
 
-export default async function AdminOrderPreviewPage({ params }: AdminOrderPreviewPageProps) {
+export default async function AdminOrderPage({ params }: AdminOrderPageProps) {
   const { id } = await params;
   const order = await findOrderById(id);
 
@@ -54,47 +32,132 @@ export default async function AdminOrderPreviewPage({ params }: AdminOrderPrevie
     notFound();
   }
 
+  const orderId = objectIdToString(order._id);
+  const unitCount = order.items.reduce((sum, item) => sum + item.quantity, 0);
+  const statusHistory = order.statusHistory ?? [
+    {
+      status: order.orderStatus,
+      changedAt: order.updatedAt,
+      note: 'Current order status.',
+    },
+  ];
+
   return (
     <div className="grid gap-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.22em] text-primary-darker">Order preview</p>
-          <h1 className="mt-2 text-3xl font-black tracking-tight text-dark md:text-4xl">{order.orderNumber}</h1>
+          <p className="text-xs font-black uppercase tracking-[0.22em] text-primary-darker">Order management</p>
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <h1 className="text-3xl font-black tracking-tight text-dark md:text-4xl">{order.orderNumber}</h1>
+            <OrderStatusBadge status={order.orderStatus} />
+          </div>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600 md:text-base">
-            Read-only dashboard preview. Full status editing and operational order management will be expanded in Issue 15.
+            Inspect Cash on Delivery order details, review customer delivery information, and update fulfilment progress.
           </p>
         </div>
-        <Link href="/admin" className="btn-secondary w-full md:w-auto">Back to dashboard</Link>
+        <div className="flex flex-col gap-2 sm:flex-row md:justify-end">
+          <Link href="/admin/orders" className="btn-secondary w-full md:w-auto">Back to orders</Link>
+          <Link href={`/order-success/${order.orderNumber}`} className="btn-primary w-full md:w-auto">Customer view</Link>
+        </div>
       </div>
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start">
-        <div className="card p-5 md:p-6">
-          <div className="flex flex-wrap items-center gap-3">
-            <h2 className="text-2xl font-black text-dark">Order items</h2>
-            <span className={`rounded-full border px-3 py-1 text-xs font-black uppercase tracking-[0.12em] ${statusBadgeClass(order.orderStatus)}`}>
-              {labelStatus(order.orderStatus)}
-            </span>
-          </div>
+      <section className="grid gap-4 md:grid-cols-4">
+        <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Order total</p>
+          <p className="mt-2 text-2xl font-black text-primary-darker">{formatPrice(order.total, CURRENCY)}</p>
+        </div>
+        <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Items</p>
+          <p className="mt-2 text-2xl font-black text-dark">{order.items.length}</p>
+          <p className="mt-1 text-xs font-semibold text-slate-500">{unitCount} total units</p>
+        </div>
+        <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Payment</p>
+          <div className="mt-2"><PaymentStatusBadge status={order.paymentStatus} /></div>
+          <p className="mt-2 text-xs font-semibold text-slate-500">Cash on Delivery</p>
+        </div>
+        <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Created</p>
+          <p className="mt-2 text-base font-black text-dark">{formatDate(order.createdAt)}</p>
+          <p className="mt-1 text-xs font-semibold text-slate-500">Updated {formatDate(order.updatedAt)}</p>
+        </div>
+      </section>
 
-          <div className="mt-5 divide-y divide-slate-100">
-            {order.items.map((item) => (
-              <div key={`${item.slug}-${item.size}-${item.color}`} className="grid gap-3 py-4 first:pt-0 last:pb-0 sm:grid-cols-[1fr_auto] sm:items-center">
-                <div>
-                  <p className="text-base font-black text-dark">{item.name}</p>
-                  <p className="mt-1 text-sm font-semibold text-slate-500">
-                    {item.size ? `Size ${item.size}` : 'One size'} · {item.color ?? 'Standard'} · Qty {item.quantity}
-                  </p>
+      <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_24rem] xl:items-start">
+        <div className="grid gap-6">
+          <section className="card p-5 md:p-6">
+            <div className="flex flex-wrap items-center gap-3">
+              <h2 className="text-2xl font-black text-dark">Order items</h2>
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-slate-700">
+                {unitCount} unit{unitCount === 1 ? '' : 's'}
+              </span>
+            </div>
+
+            <div className="mt-5 overflow-x-auto">
+              <table className="min-w-[720px] w-full text-left text-sm">
+                <thead className="border-b border-slate-100 bg-slate-50 text-xs font-black uppercase tracking-[0.14em] text-slate-500">
+                  <tr>
+                    <th className="rounded-l-2xl px-4 py-3">Product</th>
+                    <th className="px-4 py-3">Variant</th>
+                    <th className="px-4 py-3">Qty</th>
+                    <th className="px-4 py-3">Unit price</th>
+                    <th className="rounded-r-2xl px-4 py-3 text-right">Line total</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {order.items.map((item) => (
+                    <tr key={`${item.slug}-${item.size}-${item.color}`}>
+                      <td className="px-4 py-4">
+                        <p className="font-black text-dark">{item.name}</p>
+                        <Link href={`/shop/${item.slug}`} className="mt-1 inline-flex text-xs font-black text-primary-darker hover:underline">
+                          /{item.slug}
+                        </Link>
+                      </td>
+                      <td className="px-4 py-4 text-sm font-semibold text-slate-600">
+                        {item.size ? `Size ${item.size}` : 'One size'} · {item.color ?? 'Standard'}
+                      </td>
+                      <td className="px-4 py-4 font-black text-dark">{item.quantity}</td>
+                      <td className="px-4 py-4 font-semibold text-slate-600">{formatPrice(item.price, CURRENCY)}</td>
+                      <td className="px-4 py-4 text-right font-black text-primary-darker">{formatPrice(item.lineTotal, CURRENCY)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section className="card p-5 md:p-6">
+            <p className="text-xs font-black uppercase tracking-[0.22em] text-primary-darker">Status history</p>
+            <h2 className="mt-2 text-2xl font-black text-dark">Fulfilment timeline</h2>
+            <div className="mt-5 grid gap-3">
+              {statusHistory.slice().reverse().map((entry, index) => (
+                <div key={`${entry.status}-${entry.changedAt.toString()}-${index}`} className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <OrderStatusBadge status={entry.status} />
+                    <p className="text-xs font-bold text-slate-500">{formatDate(entry.changedAt)}</p>
+                  </div>
+                  {entry.note ? <p className="mt-3 text-sm font-semibold leading-6 text-slate-600">{entry.note}</p> : null}
                 </div>
-                <div className="text-left sm:text-right">
-                  <p className="text-sm font-semibold text-slate-500">{formatPrice(item.price, CURRENCY)} each</p>
-                  <p className="mt-1 text-base font-black text-primary-darker">{formatPrice(item.lineTotal, CURRENCY)}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </section>
         </div>
 
         <aside className="grid gap-6">
+          <section className="card p-5 md:p-6">
+            <p className="text-xs font-black uppercase tracking-[0.22em] text-primary-darker">Update status</p>
+            <h2 className="mt-2 text-xl font-black text-dark">Current: {orderStatusLabel(order.orderStatus)}</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-600">
+              Update the operational order state as the store prepares, ships, delivers, or cancels a Cash on Delivery order.
+            </p>
+            <div className="mt-5">
+              <OrderStatusUpdateForm orderId={orderId} orderNumber={order.orderNumber} currentStatus={order.orderStatus} />
+            </div>
+            <p className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs font-bold leading-5 text-amber-800">
+              Cancelling an order does not automatically restore stock in this minimal RAD version. Stock adjustments can be handled manually in product management.
+            </p>
+          </section>
+
           <section className="card p-5 md:p-6">
             <p className="text-xs font-black uppercase tracking-[0.22em] text-primary-darker">Customer</p>
             <h2 className="mt-2 text-xl font-black text-dark">Delivery details</h2>
@@ -102,8 +165,10 @@ export default async function AdminOrderPreviewPage({ params }: AdminOrderPrevie
               <p><span className="font-black text-dark">Name:</span> {order.customerInfo.name}</p>
               <p><span className="font-black text-dark">Email:</span> {order.customerInfo.email}</p>
               <p><span className="font-black text-dark">Phone:</span> {order.customerInfo.phone}</p>
-              <p><span className="font-black text-dark">Address:</span> {order.customerInfo.address}, {order.customerInfo.city}, {order.customerInfo.district}</p>
-              {order.customerInfo.note ? <p><span className="font-black text-dark">Note:</span> {order.customerInfo.note}</p> : null}
+              <p><span className="font-black text-dark">Address:</span> {order.customerInfo.address}</p>
+              <p><span className="font-black text-dark">City:</span> {order.customerInfo.city}</p>
+              <p><span className="font-black text-dark">District:</span> {order.customerInfo.district}</p>
+              {order.customerInfo.note ? <p><span className="font-black text-dark">Customer note:</span> {order.customerInfo.note}</p> : null}
             </div>
           </section>
 
@@ -117,8 +182,8 @@ export default async function AdminOrderPreviewPage({ params }: AdminOrderPrevie
                 <span>Total</span><span className="text-primary-darker">{formatPrice(order.total, CURRENCY)}</span>
               </div>
               <div className="border-t border-slate-100 pt-4">
-                <p>Payment status: {labelStatus(order.paymentStatus)}</p>
-                <p className="mt-1">Created: {formatDate(order.createdAt)}</p>
+                <p>Payment method: Cash on Delivery</p>
+                <p className="mt-1">Payment status: {paymentStatusLabel(order.paymentStatus)}</p>
               </div>
             </div>
           </section>

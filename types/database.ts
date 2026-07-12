@@ -72,6 +72,13 @@ export interface OrderItemDocument {
   lineTotal: number;
 }
 
+export interface OrderStatusHistoryEntry {
+  status: OrderStatus;
+  changedAt: Date;
+  changedBy?: ObjectId;
+  note?: string;
+}
+
 export interface OrderDocument {
   _id: ObjectId;
   orderNumber: string;
@@ -84,6 +91,7 @@ export interface OrderDocument {
   paymentMethod: PaymentMethod;
   paymentStatus: PaymentStatus;
   orderStatus: OrderStatus;
+  statusHistory?: OrderStatusHistoryEntry[];
   createdAt: Date;
   updatedAt: Date;
 }

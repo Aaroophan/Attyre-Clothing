@@ -6,6 +6,7 @@ import { tryObjectId } from './object-id';
 export interface OrderListOptions {
   status?: OrderStatus;
   customerId?: string;
+  search?: string;
   limit?: number;
 }
 
@@ -13,11 +14,43 @@ async function ordersCollection() {
   return getCollection<OrderDocument>(COLLECTIONS.orders);
 }
 
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function buildOrderSearchFilter(search: string): Filter<OrderDocument> | null {
+  const trimmed = search.trim();
+
+  if (!trimmed) {
+    return null;
+  }
+
+  const expression = new RegExp(escapeRegExp(trimmed), 'i');
+
+  return {
+    $or: [
+      { orderNumber: expression },
+      { 'customerInfo.name': expression },
+      { 'customerInfo.email': expression },
+      { 'customerInfo.phone': expression },
+      { 'customerInfo.city': expression },
+      { 'customerInfo.district': expression },
+    ],
+  } as Filter<OrderDocument>;
+}
+
 export async function createOrder(input: CreateOrderInput): Promise<OrderDocument> {
   const collection = await ordersCollection();
   const now = new Date();
   const document: Omit<OrderDocument, '_id'> = {
     ...input,
+    statusHistory: [
+      {
+        status: input.orderStatus,
+        changedAt: now,
+        note: 'Order created by customer checkout.',
+      },
+    ],
     createdAt: now,
     updatedAt: now,
   };
@@ -42,6 +75,12 @@ export async function listOrders(options: OrderListOptions = {}): Promise<OrderD
     }
 
     filter.customerId = customerObjectId;
+  }
+
+  const searchFilter = options.search ? buildOrderSearchFilter(options.search) : null;
+
+  if (searchFilter) {
+    Object.assign(filter, searchFilter);
   }
 
   const cursor = collection.find(filter).sort({ createdAt: -1 });
@@ -73,18 +112,33 @@ export async function listCustomerOrders(customerId: string): Promise<OrderDocum
   return listOrders({ customerId });
 }
 
-export async function updateOrderStatus(id: string, orderStatus: OrderStatus): Promise<OrderDocument | null> {
+export async function updateOrderStatus(
+  id: string,
+  orderStatus: OrderStatus,
+  changedBy?: string,
+  note?: string,
+): Promise<OrderDocument | null> {
   const objectId = tryObjectId(id);
 
   if (!objectId) {
     return null;
   }
 
+  const changedByObjectId = tryObjectId(changedBy);
   const collection = await ordersCollection();
+  const now = new Date();
   const update: UpdateFilter<OrderDocument> = {
     $set: {
       orderStatus,
-      updatedAt: new Date(),
+      updatedAt: now,
+    },
+    $push: {
+      statusHistory: {
+        status: orderStatus,
+        changedAt: now,
+        ...(changedByObjectId ? { changedBy: changedByObjectId } : {}),
+        ...(note ? { note } : {}),
+      },
     },
   };
 

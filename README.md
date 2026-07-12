@@ -927,3 +927,50 @@ components/admin/categories/CategoryStatusButton.tsx # deactivate/reactivate cli
 lib/admin-category-validation.ts               # shared category validation and payload normalization
 lib/db/categories.ts                           # create/update/list/status/usage database helpers
 ```
+
+## Issue 15 - Admin Order Management and Order Status Updates
+
+Issue 15 adds operational order management for the protected admin area.
+
+Implemented routes:
+
+```text
+/admin/orders
+/admin/orders/[id]
+PATCH /api/admin/orders/[id]
+```
+
+Admin order features:
+
+- MongoDB-backed order list.
+- Search by order number, customer name, email, phone, city, or district.
+- Status filtering by Pending, Processing, Shipped, Delivered, and Cancelled.
+- Order summary cards for total, pending, processing, shipped, delivered, and cancelled orders.
+- Order table with customer, item count, Cash on Delivery total, payment status, order status, and action links.
+- Full order detail page with delivery details, item table, payment summary, status timeline, and customer confirmation link.
+- Protected status update control for admin users.
+- Status history entries are recorded when the admin changes an order status.
+- Customer order history reflects the updated order status.
+
+Testing flow:
+
+```bash
+npm install
+npm run seed
+npm run dev
+```
+
+1. Place at least one customer order from `/shop`, `/cart`, and `/checkout`.
+2. Log in as admin at `/login?next=/admin/orders`.
+3. Open `/admin/orders` and verify the order appears.
+4. Use search and status filters.
+5. Open an order detail page.
+6. Change the status from Pending to Processing, Shipped, Delivered, or Cancelled.
+7. Refresh `/admin/orders` and confirm the updated status is visible.
+8. Log in as the customer who placed the order and confirm `/account/orders` shows the updated status.
+
+Notes:
+
+- Cash on Delivery payment status remains visible separately from order status.
+- Cancelling an order does not automatically restore stock in this minimal RAD version.
+- Stock changes after cancellation can be handled manually through product management.
