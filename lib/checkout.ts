@@ -219,7 +219,7 @@ function prepareOrderFromProducts(
   };
 }
 
-export async function placeCheckoutOrder(payload: CheckoutOrderRequest): Promise<OrderDocument> {
+export async function placeCheckoutOrder(payload: CheckoutOrderRequest, customerId?: string): Promise<OrderDocument> {
   const customerInfo = normalizeCustomerInfo(payload.customerInfo);
   const fieldErrors = validateCustomerInfo(customerInfo);
 
@@ -228,6 +228,7 @@ export async function placeCheckoutOrder(payload: CheckoutOrderRequest): Promise
   }
 
   const cartItems = normalizeItems(payload.items);
+  const customerObjectId = customerId ? tryObjectId(customerId) : null;
   const client = await getMongoClient();
   const session = client.startSession();
 
@@ -245,6 +246,11 @@ export async function placeCheckoutOrder(payload: CheckoutOrderRequest): Promise
         .toArray();
       const orderNumber = await getUniqueOrderNumber(ordersCollection, session);
       const prepared = prepareOrderFromProducts(customerInfo, cartItems, products, orderNumber);
+
+      if (customerObjectId) {
+        prepared.order.customerId = customerObjectId;
+      }
+
       const now = new Date();
 
       for (const update of prepared.stockUpdates) {

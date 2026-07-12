@@ -2,11 +2,12 @@
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
 import { EmptyState, LoadingState } from '@/components/ui';
 import { useCart } from '@/components/cart/CartProvider';
 import { CURRENCY } from '@/lib/constants';
 import type { CheckoutCustomerInput, CheckoutOrderResponse } from '@/types/checkout';
+import type { PublicUser } from '@/types/auth';
 import { formatPrice } from '@/utils';
 
 interface CheckoutFormState extends CheckoutCustomerInput {
@@ -146,6 +147,38 @@ export function CheckoutPageClient() {
   const [form, setForm] = useState<CheckoutFormState>(initialFormState);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadCurrentUser() {
+      try {
+        const response = await globalThis.fetch('/api/auth/me', { cache: 'no-store' });
+        const result = await response.json() as { user: PublicUser | null };
+
+        const user = result.user;
+
+        if (!isMounted || !user) {
+          return;
+        }
+
+        setForm((current) => ({
+          ...current,
+          name: current.name || user.name,
+          email: current.email || user.email,
+          phone: current.phone || user.phone || '',
+        }));
+      } catch {
+        // Guest checkout remains available if the current-user request fails.
+      }
+    }
+
+    void loadCurrentUser();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const checkoutItems = useMemo(() => items.map((item) => ({
     productId: item.productId,

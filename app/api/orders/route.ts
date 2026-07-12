@@ -2,13 +2,15 @@ import { NextResponse } from 'next/server';
 import { placeCheckoutOrder, CheckoutValidationError } from '@/lib/checkout';
 import type { CheckoutOrderRequest, CheckoutOrderResponse } from '@/types/checkout';
 import { objectIdToString } from '@/lib/db/object-id';
+import { getCurrentUser } from '@/lib/auth/session';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   try {
     const payload = await request.json() as CheckoutOrderRequest;
-    const order = await placeCheckoutOrder(payload);
+    const currentUser = await getCurrentUser();
+    const order = await placeCheckoutOrder(payload, currentUser ? objectIdToString(currentUser._id) : undefined);
 
     return NextResponse.json<CheckoutOrderResponse>({
       ok: true,

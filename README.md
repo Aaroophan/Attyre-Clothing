@@ -562,3 +562,62 @@ types/checkout.ts                             # Checkout request and response ty
 ```
 
 The checkout intentionally stays simple for the RAD MVP: no card payments, no payment gateway, no email notifications, and no delivery tracking integration.
+
+## Customer Registration, Login, Sessions, and Order History
+
+Issue 10 adds customer account functionality using custom email/password authentication. It keeps the implementation lightweight for the RAD MVP and avoids external auth providers.
+
+Implemented authentication features:
+
+- customer registration at `/register`
+- customer login at `/login`
+- logout through the header after login
+- HTTP-only cookie session named `attyre_session`
+- signed server-side session payload using `SESSION_SECRET`
+- password hashing with bcryptjs
+- current-user API route at `/api/auth/me`
+- protected customer order history at `/account/orders`
+- checkout now links orders to the logged-in customer when a session exists
+- guest checkout still works when the customer is not logged in
+
+Authentication API routes:
+
+```
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/logout
+GET  /api/auth/me
+```
+
+Customer account routes:
+
+```
+/register
+/login
+/account/orders
+```
+
+Testing flow:
+
+```bash
+npm run seed
+npm run dev
+```
+
+Then test:
+
+```
+/register              # create a customer account
+/login                 # log in with that account
+/shop/classic-white-shirt
+/cart
+/checkout              # place an order while logged in
+/account/orders        # confirm the order appears in customer history
+```
+
+Security notes for the assignment:
+
+- Passwords are stored as bcrypt hashes, not plain text.
+- Session data is stored in an HTTP-only cookie, not localStorage.
+- Customer order history is filtered by the logged-in customer ID.
+- Admin route protection is intentionally left for the later admin authentication issue.

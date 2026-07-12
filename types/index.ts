@@ -123,3 +123,11 @@ export type {
   UserDocument,
   UserRole,
 } from './database';
+
+export type {
+  AuthErrorResponse,
+  AuthResponse,
+  AuthSessionPayload,
+  AuthSuccessResponse,
+  PublicUser,
+} from './auth';

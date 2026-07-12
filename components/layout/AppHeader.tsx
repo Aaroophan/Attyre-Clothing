@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCart } from '@/components/cart/CartProvider';
 import { SITE_NAME } from '@/lib/constants';
+import type { PublicUser } from '@/types/auth';
 import { cn } from '@/utils';
 
 const primaryNavItems = [
@@ -15,11 +16,6 @@ const primaryNavItems = [
   { href: '/contact', label: 'Contact' },
 ];
 
-const utilityNavItems = [
-  { href: '/cart', label: 'Cart' },
-  { href: '/login', label: 'Login' },
-  { href: '/admin', label: 'Admin' },
-];
 
 function isActiveLink(pathname: string, href: string): boolean {
   const cleanHref = href.split('?')[0];
@@ -38,7 +34,46 @@ function isActiveLink(pathname: string, href: string): boolean {
 export function AppHeader() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<PublicUser | null>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { totals } = useCart();
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadCurrentUser() {
+      try {
+        const response = await globalThis.fetch('/api/auth/me', { cache: 'no-store' });
+        const result = await response.json() as { user: PublicUser | null };
+
+        if (isMounted) {
+          setCurrentUser(result.user);
+        }
+      } catch {
+        if (isMounted) {
+          setCurrentUser(null);
+        }
+      }
+    }
+
+    void loadCurrentUser();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [pathname]);
+
+  async function handleLogout() {
+    setIsLoggingOut(true);
+
+    try {
+      await globalThis.fetch('/api/auth/logout', { method: 'POST' });
+      setCurrentUser(null);
+      globalThis.location.href = '/';
+    } finally {
+      setIsLoggingOut(false);
+    }
+  }
 
   return (
     <header className="border-b border-slate-200 bg-white">
@@ -79,33 +114,62 @@ export function AppHeader() {
           </nav>
 
           <div className="hidden items-center gap-2 lg:flex">
-            {utilityNavItems.map((item) => {
-              const active = isActiveLink(pathname, item.href);
-              const isCart = item.href === '/cart';
-              const isLogin = item.href === '/login';
+            <Link
+              href="/cart"
+              aria-current={isActiveLink(pathname, '/cart') ? 'page' : undefined}
+              className={cn(
+                'inline-flex min-h-10 items-center justify-center rounded-full border border-sky-200 bg-white px-4 text-sm font-bold text-primary-darker transition hover:bg-sky-50',
+                isActiveLink(pathname, '/cart') && 'ring-2 ring-sky-200',
+              )}
+            >
+              <span>Cart</span>
+              <span className="ml-2 rounded-full bg-primary px-2 py-0.5 text-xs font-black text-white">
+                {totals.itemCount}
+              </span>
+            </Link>
 
-              return (
+            {currentUser ? (
+              <>
                 <Link
-                  key={item.href}
-                  href={item.href}
-                  aria-current={active ? 'page' : undefined}
+                  href="/account/orders"
+                  aria-current={isActiveLink(pathname, '/account/orders') ? 'page' : undefined}
                   className={cn(
-                    'inline-flex min-h-10 items-center justify-center rounded-full px-4 text-sm font-bold transition',
-                    isCart && 'border border-sky-200 bg-white text-primary-darker hover:bg-sky-50',
-                    isLogin && 'bg-dark text-white hover:bg-primary-darker',
-                    !isCart && !isLogin && 'text-slate-600 hover:bg-slate-100 hover:text-dark',
-                    active && 'ring-2 ring-sky-200',
+                    'inline-flex min-h-10 items-center justify-center rounded-full px-4 text-sm font-bold text-slate-600 transition hover:bg-slate-100 hover:text-dark',
+                    isActiveLink(pathname, '/account/orders') && 'ring-2 ring-sky-200',
                   )}
                 >
-                  <span>{item.label}</span>
-                  {isCart ? (
-                    <span className="ml-2 rounded-full bg-primary px-2 py-0.5 text-xs font-black text-white">
-                      {totals.itemCount}
-                    </span>
-                  ) : null}
+                  Orders
                 </Link>
-              );
-            })}
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
+                  className="inline-flex min-h-10 items-center justify-center rounded-full bg-dark px-4 text-sm font-bold text-white transition hover:bg-primary-darker disabled:cursor-not-allowed disabled:bg-slate-300"
+                >
+                  {isLoggingOut ? 'Leaving...' : 'Logout'}
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="inline-flex min-h-10 items-center justify-center rounded-full bg-white px-4 text-sm font-bold text-white transition hover:bg-primary-dark hover:text-slate-100">
+                  Login
+                </Link>
+                <Link href="/register" className="inline-flex min-h-10 items-center justify-center rounded-full px-4 text-sm font-bold text-slate-600 transition hover:bg-slate-100 hover:text-dark">
+                  Register
+                </Link>
+              </>
+            )}
+
+            <Link
+              href="/admin"
+              aria-current={isActiveLink(pathname, '/admin') ? 'page' : undefined}
+              className={cn(
+                'inline-flex min-h-10 items-center justify-center rounded-full px-4 text-sm font-bold text-slate-600 transition hover:bg-slate-100 hover:text-dark',
+                isActiveLink(pathname, '/admin') && 'ring-2 ring-sky-200',
+              )}
+            >
+              Admin
+            </Link>
           </div>
 
           <button
@@ -125,7 +189,12 @@ export function AppHeader() {
 
         {isMenuOpen ? (
           <nav className="grid gap-2 border-t border-slate-100 py-4 lg:hidden" aria-label="Mobile navigation">
-            {[...primaryNavItems, ...utilityNavItems].map((item) => {
+            {[
+              ...primaryNavItems,
+              { href: '/cart', label: 'Cart' },
+              ...(currentUser ? [{ href: '/account/orders', label: 'Orders' }] : [{ href: '/login', label: 'Login' }, { href: '/register', label: 'Register' }]),
+              { href: '/admin', label: 'Admin' },
+            ].map((item) => {
               const active = isActiveLink(pathname, item.href);
 
               return (
@@ -148,6 +217,21 @@ export function AppHeader() {
                 </Link>
               );
             })}
+
+            {currentUser ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  void handleLogout();
+                }}
+                disabled={isLoggingOut}
+                className="flex items-center justify-between rounded-2xl bg-dark px-4 py-3 text-sm font-bold text-white transition hover:bg-primary-darker disabled:cursor-not-allowed disabled:bg-slate-300"
+              >
+                <span>{isLoggingOut ? 'Logging out...' : 'Logout'}</span>
+                <span className="text-xs uppercase tracking-[0.18em] text-slate-300">{currentUser.name}</span>
+              </button>
+            ) : null}
           </nav>
         ) : null}
       </div>
