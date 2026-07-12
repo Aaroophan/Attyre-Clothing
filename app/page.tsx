@@ -150,18 +150,18 @@ export default async function Home() {
   return (
     <div className="bg-[#f7fbfd]">
       <section className="overflow-hidden bg-gradient-to-br from-primary-darker via-dark to-primary-darker text-white">
-        <PageContainer className="grid gap-12 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:py-24">
+        <PageContainer className="grid gap-8 py-12 sm:gap-12 sm:py-16 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:py-24">
           <div>
-            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-primary">
+            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-primary">
               Online clothing store
             </p>
-            <h1 className="max-w-3xl text-5xl font-black tracking-tight md:text-6xl">
+            <h1 className="max-w-3xl text-4xl font-black tracking-tight sm:text-5xl md:text-6xl">
               Build your everyday wardrobe with {SITE_NAME}.
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-gray-200">
+            <p className="mt-4 max-w-2xl text-base leading-7 sm:text-lg sm:leading-8 text-gray-200">
               Shop curated menswear, womenswear, accessories, sale picks, and new arrivals through a clean storefront designed for small-to-medium clothing businesses.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row">
               <Link href="/shop" className="btn-primary bg-white text-primary-darker hover:bg-gray-100">
                 Shop Collection
               </Link>
@@ -169,56 +169,56 @@ export default async function Home() {
                 View New Arrivals
               </Link>
             </div>
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
-              <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
-                <p className="text-2xl font-black">12+</p>
-                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-white/70">Seed products</p>
+            <div className="mt-8 grid gap-3 sm:gap-4 sm:grid-cols-3">
+              <div className="rounded-xl border border-white/10 bg-white/10 p-3 sm:p-4 backdrop-blur">
+                <p className="text-xl sm:text-2xl font-black">12+</p>
+                <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-white/70">Seed products</p>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
-                <p className="text-2xl font-black">5</p>
-                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-white/70">Categories</p>
+              <div className="rounded-xl border border-white/10 bg-white/10 p-3 sm:p-4 backdrop-blur">
+                <p className="text-xl sm:text-2xl font-black">5</p>
+                <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-white/70">Categories</p>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
-                <p className="text-2xl font-black">COD</p>
-                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-white/70">Checkout plan</p>
+              <div className="rounded-xl border border-white/10 bg-white/10 p-3 sm:p-4 backdrop-blur">
+                <p className="text-xl sm:text-2xl font-black">COD</p>
+                <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-white/70">Checkout plan</p>
               </div>
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-white/10 bg-white/10 p-4 shadow-2xl backdrop-blur sm:p-6">
-            <div className="rounded-[1.5rem] bg-white p-5 text-dark shadow-xl sm:p-6">
+          <div className="rounded-2xl border border-white/10 bg-white/10 p-4 shadow-2xl backdrop-blur sm:p-6">
+            <div className="rounded-xl bg-white p-4 text-dark shadow-xl sm:rounded-2xl sm:p-6">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.25em] text-primary-darker">
+                  <p className="text-xs font-bold uppercase tracking-wider text-primary-darker">
                     Featured edit
                   </p>
-                  <p className="mt-2 text-2xl font-black tracking-tight">
+                  <p className="mt-2 text-lg sm:text-2xl font-black tracking-tight line-clamp-2">
                     {heroProduct?.name ?? 'Attyre starter catalog'}
                   </p>
                 </div>
-                <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.15em] text-primary-darker">
+                <span className="flex-shrink-0 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary-darker">
                   New
                 </span>
               </div>
 
               {heroProduct ? (
-                <div className="mt-6 overflow-hidden rounded-3xl bg-gray-100">
+                <div className="mt-4 overflow-hidden rounded-xl bg-gray-100 sm:mt-6 sm:rounded-2xl">
                   <Image
                     src={heroProduct.image}
                     alt={`${heroProduct.name} storefront feature`}
                     width={560}
                     height={640}
-                    className="h-80 w-full object-cover"
+                    className="h-64 w-full object-cover sm:h-80"
                     priority
                   />
                 </div>
               ) : (
-                <div className="mt-6 rounded-3xl bg-primary/10 p-10 text-center text-sm font-semibold text-primary-darker">
+                <div className="mt-4 rounded-xl bg-primary/10 p-6 text-center text-xs sm:text-sm font-semibold text-primary-darker sm:mt-6 sm:rounded-2xl sm:p-8">
                   Seed the database to show featured product imagery here.
                 </div>
               )}
 
-              <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="mt-4 flex flex-col gap-4 sm:mt-6 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm text-gray-500">Starting from</p>
                   <p className="text-2xl font-black text-primary-darker">
@@ -234,14 +234,14 @@ export default async function Home() {
         </PageContainer>
       </section>
 
-      <PageContainer className="py-16">
+      <PageContainer className="py-12 sm:py-16 md:py-20">
         {usingFallbackData ? (
-          <div className="mb-10 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
+          <div className="mb-8 rounded-lg border border-amber-200 bg-amber-50 p-4 text-xs sm:text-sm leading-6 text-amber-900 sm:mb-10 sm:rounded-xl sm:p-5 md:mb-12">
             The homepage is using bundled preview data because the live catalog could not be loaded. Run <strong>npm run seed</strong> after configuring MongoDB to display database-backed products.
           </div>
         ) : null}
 
-        <section className="mb-16">
+        <section className="mb-12 sm:mb-16 md:mb-20">
           <SectionHeader
             eyebrow="Browse by category"
             title="Shop by style lane"
@@ -251,7 +251,7 @@ export default async function Home() {
           />
 
           {categories.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-3 md:gap-6">
               {categories.map((category) => (
                 <CategoryPreviewCard
                   key={category.id}
@@ -272,19 +272,19 @@ export default async function Home() {
           )}
         </section>
 
-        <section className="mb-16 overflow-hidden rounded-[2rem] bg-dark text-white shadow-xl">
-          <div className="grid gap-8 p-8 md:grid-cols-[1.1fr_0.9fr] md:items-center md:p-10 lg:p-12">
+        <section className="mb-12 overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl bg-dark text-white shadow-xl md:mb-20">
+          <div className="grid gap-6 p-6 sm:gap-8 sm:p-8 md:gap-10 md:grid-cols-[1.1fr_0.9fr] md:items-center md:p-10 lg:p-12">
             <div>
-              <p className="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-primary">
+              <p className="mb-3 text-xs font-bold uppercase tracking-wider text-primary">
                 Sale preview
               </p>
-              <h2 className="text-3xl font-black tracking-tight md:text-4xl">
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight md:text-4xl">
                 Launch-ready sale section for budget-conscious shoppers.
               </h2>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-white/75">
+              <p className="mt-3 sm:mt-4 max-w-2xl text-sm sm:text-base leading-7 text-white/75">
                 Attyre includes sale-ready product data so the storefront can demonstrate discounts, original prices, and category-based shopping without adding payment gateway complexity yet.
               </p>
-              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <div className="mt-5 sm:mt-7 flex flex-col gap-3 sm:flex-row">
                 <Link href="/shop?category=sale" className="btn-primary bg-white text-primary-darker hover:bg-gray-100">
                   Browse Sale
                 </Link>
@@ -295,26 +295,26 @@ export default async function Home() {
                 ) : null}
               </div>
             </div>
-            <div className="rounded-3xl bg-white/10 p-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-white/60">
+            <div className="rounded-2xl bg-white/10 p-5 sm:p-6 md:rounded-3xl">
+              <p className="text-xs font-bold uppercase tracking-wider text-white/60">
                 Example discount
               </p>
-              <p className="mt-4 text-4xl font-black">
+              <p className="mt-4 text-3xl sm:text-4xl font-black">
                 {salePreview ? formatPrice(salePreview.salePrice ?? salePreview.price, CURRENCY) : 'Sale items'}
               </p>
               {salePreview?.salePrice ? (
-                <p className="mt-2 text-lg text-white/60 line-through">
+                <p className="mt-2 text-base sm:text-lg text-white/60 line-through">
                   {formatPrice(salePreview.price, CURRENCY)}
                 </p>
               ) : null}
-              <p className="mt-4 text-sm leading-6 text-white/70">
+              <p className="mt-3 sm:mt-4 text-sm leading-6 text-white/70">
                 {salePreview?.description ?? 'Seed sale products to show discounted launch items here.'}
               </p>
             </div>
           </div>
         </section>
 
-        <section className="mb-16">
+        <section className="mb-12 sm:mb-16 md:mb-20">
           <SectionHeader
             eyebrow="Featured products"
             title="Selected pieces for the first release"
@@ -324,7 +324,7 @@ export default async function Home() {
           />
 
           {featuredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-3 md:gap-6">
               {featuredProducts.map((product) => (
                 <HomeProductCard
                   key={product.id}
@@ -349,13 +349,13 @@ export default async function Home() {
           )}
         </section>
 
-        <section className="mb-16">
+        <section className="mb-12 sm:mb-16 md:mb-20">
           <SectionHeader
             eyebrow="Store benefits"
             title="Built for a simple SME clothing workflow"
             description="The landing page communicates the core business value while keeping the first application release focused and testable."
           />
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-4 md:gap-6">
             {trustHighlights.map((highlight) => (
               <div key={highlight.title} className="card p-6">
                 <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-xl font-black text-primary-darker">
@@ -368,20 +368,20 @@ export default async function Home() {
           </div>
         </section>
 
-        <section className="rounded-[2rem] border border-primary/10 bg-white p-8 shadow-sm md:p-10">
-          <div className="grid gap-8 md:grid-cols-[1fr_auto] md:items-center">
+        <section className="rounded-xl sm:rounded-2xl md:rounded-3xl border border-primary/10 bg-white p-6 shadow-sm sm:p-8 md:p-10">
+          <div className="grid gap-6 md:grid-cols-[1fr_auto] md:items-center md:gap-8">
             <div>
-              <p className="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-primary-darker">
+              <p className="mb-2 text-xs font-bold uppercase tracking-wider text-primary-darker">
                 Ready for the next iteration
               </p>
-              <h2 className="text-3xl font-black tracking-tight text-dark">
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-dark">
                 Continue into the full shopping flow.
               </h2>
-              <p className="mt-3 max-w-2xl text-base leading-7 text-gray-600">
+              <p className="mt-3 max-w-2xl text-sm sm:text-base leading-7 text-gray-600">
                 This storefront now gives the project a complete landing experience. The next issues can connect the shop page, product details, cart, and Cash on Delivery checkout around the seeded catalog.
               </p>
             </div>
-            <Link href="/shop" className="btn-primary inline-flex justify-center">
+            <Link href="/shop" className="btn-primary inline-flex justify-center flex-shrink-0">
               Start Shopping
             </Link>
           </div>

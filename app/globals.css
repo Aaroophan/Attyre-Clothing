@@ -27,18 +27,18 @@ body {
 
 @layer components {
   .btn-primary {
-    @apply px-6 py-3 bg-primary text-white rounded-lg font-medium transition-colors hover:bg-primary-darker;
+    @apply inline-flex items-center justify-center px-6 py-3 bg-primary text-white rounded-lg font-semibold transition-all duration-200 hover:bg-primary-dark active:bg-primary-darker disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
-    @apply px-6 py-3 bg-gray-200 text-dark rounded-lg font-medium transition-colors hover:bg-gray-300;
+    @apply inline-flex items-center justify-center px-6 py-3 bg-gray-200 text-dark rounded-lg font-semibold transition-all duration-200 hover:bg-gray-300 active:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .card {
-    @apply bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow;
+    @apply bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200;
   }
 
   .container-max {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
   }
 }
