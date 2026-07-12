@@ -694,3 +694,74 @@ components/admin/AdminShell.tsx         # Admin navigation/sidebar layout
 components/admin/AdminLogoutButton.tsx  # Admin logout action
 lib/auth/admin.ts                       # Admin role helper functions
 ```
+
+## Issue 12 - Admin Dashboard and Basic Sales Overview
+
+Issue 12 replaces the protected admin landing placeholder with a real MongoDB-backed dashboard for the Attyre store owner.
+
+Implemented dashboard features:
+
+- active product count
+- total order count
+- pending order count
+- delivered order count
+- low-stock product count
+- estimated sales total excluding cancelled orders
+- estimated average order value for non-cancelled orders
+- latest five orders preview
+- low-stock product preview
+- order status snapshot
+- responsive dashboard cards and tables
+- read-only admin order preview route for dashboard links
+
+Admin dashboard routes:
+
+```text
+/admin                    # dashboard metrics and sales overview
+/admin/orders/[id]        # read-only order preview linked from recent orders
+/admin/products           # product management placeholder for Issue 13
+/admin/categories         # category management placeholder for Issue 14
+/admin/orders             # order management placeholder for Issue 15
+```
+
+Manual testing flow:
+
+```bash
+npm run seed
+npm run dev
+```
+
+Then test:
+
+```text
+/login?next=/admin        # log in as admin
+/admin                    # verify dashboard cards and recent order preview
+/admin/orders/[id]        # open a recent order from the dashboard
+```
+
+To test dashboard order metrics properly:
+
+1. Log in as a customer.
+2. Add a product to cart.
+3. Place a Cash on Delivery order through `/checkout`.
+4. Log out and log in as the admin.
+5. Open `/admin`.
+6. Confirm total orders, pending orders, sales total, and recent orders are updated.
+
+Default seeded admin credentials come from environment variables:
+
+```env
+ADMIN_EMAIL=admin@attyre.com
+ADMIN_PASSWORD=SecurePassword123!
+```
+
+Important files:
+
+```text
+app/admin/page.tsx                    # MongoDB-backed dashboard metrics and recent orders
+app/admin/orders/[id]/page.tsx        # Read-only admin order preview
+components/admin/DashboardCard.tsx    # Reusable dashboard metric card
+components/admin/index.ts             # Admin component exports
+lib/db/products.ts                    # Product count and low-stock helpers
+lib/db/orders.ts                      # Order counts, sales total, and recent order helpers
+```

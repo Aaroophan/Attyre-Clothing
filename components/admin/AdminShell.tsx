@@ -49,7 +49,7 @@ export function AdminShell({ user, children }: AdminShellProps) {
 
   return (
     <section className="bg-slate-50 py-6 md:py-8">
-      <div className="container-max">
+      <div className="p-5 max-w-[90vw] mx-auto">
         <div className="grid gap-5 lg:grid-cols-[18rem_minmax(0,1fr)]">
           <aside className="card h-fit overflow-hidden lg:sticky lg:top-6">
             <div className="border-b border-slate-100 bg-gradient-to-br from-primary-darker to-primary-dark p-5 text-white">
