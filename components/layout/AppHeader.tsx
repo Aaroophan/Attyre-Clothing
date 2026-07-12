@@ -80,13 +80,9 @@ export function AppHeader() {
       <div className="container-max">
         <div className="flex min-h-20 items-center justify-between gap-4 py-3">
           <Link href="/" className="flex shrink-0 items-center gap-3" aria-label="Attyre home">
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-darker text-lg font-black text-white shadow-sm">
-              A
-            </span>
             <span className="leading-none">
-              <span className="block text-2xl font-black tracking-tight text-dark">{SITE_NAME}</span>
-              <span className="mt-1 block text-[0.65rem] font-black uppercase tracking-[0.24em] text-slate-500">
-                Clothing Store
+              <span className="block text-3xl font-black tracking-wide scale-200 bg-gradient-to-r from-primary via-primary-dark to-primary-darker bg-clip-text text-transparent px-1" style={{ fontFamily: 'Mistral, "Brush Script MT", cursive' }} >
+                {SITE_NAME}
               </span>
             </span>
           </Link>
@@ -151,7 +147,7 @@ export function AppHeader() {
               </>
             ) : (
               <>
-                <Link href="/login" className="inline-flex min-h-10 items-center justify-center rounded-full bg-dark px-4 text-sm font-bold text-white transition hover:bg-primary-darker">
+                <Link href="/login" className="inline-flex min-h-10 items-center justify-center rounded-full bg-primary px-4 text-sm font-bold text-slate-600 transition hover:bg-slate-100 hover:text-dark">
                   Login
                 </Link>
                 <Link href="/register" className="inline-flex min-h-10 items-center justify-center rounded-full px-4 text-sm font-bold text-slate-600 transition hover:bg-slate-100 hover:text-dark">

@@ -23,14 +23,8 @@ export function AppFooter() {
         <div className="grid gap-10 md:grid-cols-[1.6fr_0.7fr_0.7fr]">
           <div>
             <Link href="/" className="inline-flex items-center gap-3" aria-label="Attyre home">
-              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-lg font-black text-primary-darker">
-                A
-              </span>
-              <span>
-                <span className="block text-2xl font-black tracking-tight">{SITE_NAME}</span>
-                <span className="block text-xs font-black uppercase tracking-[0.22em] text-primary">
-                  Clothing Store
-                </span>
+              <span className="block text-3xl font-black tracking-wide bg-gradient-to-r from-primary via-primary-dark to-primary-darker bg-clip-text text-transparent ps-1" style={{ fontFamily: 'Mistral, "Brush Script MT", cursive' }} >
+                {SITE_NAME}
               </span>
             </Link>
             <p className="mt-5 max-w-xl text-sm leading-7 text-slate-300">
