@@ -44,6 +44,7 @@ export function LoginForm() {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const nextUrl = searchParams.get('next') || '/account/orders';
+  const isAdminLogin = nextUrl.startsWith('/admin');
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
@@ -92,10 +93,12 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="card mx-auto max-w-xl p-5 md:p-7" noValidate>
-      <p className="text-xs font-black uppercase tracking-[0.22em] text-primary-darker">Customer login</p>
-      <h1 className="mt-2 text-3xl font-black tracking-tight text-dark md:text-4xl">Welcome back</h1>
+      <p className="text-xs font-black uppercase tracking-[0.22em] text-primary-darker">{isAdminLogin ? 'Admin login' : 'Account login'}</p>
+      <h1 className="mt-2 text-3xl font-black tracking-tight text-dark md:text-4xl">{isAdminLogin ? 'Admin access' : 'Welcome back'}</h1>
       <p className="mt-3 text-sm leading-6 text-slate-600">
-        Log in to view your Attyre order history and keep checkout details connected to your account.
+        {isAdminLogin
+          ? 'Log in with the seeded Attyre admin account to open the protected administration area.'
+          : 'Log in to view your Attyre order history and keep checkout details connected to your account.'}
       </p>
 
       {fieldErrors.form ? (
@@ -137,7 +140,7 @@ export function LoginForm() {
       </button>
 
       <p className="mt-5 text-center text-sm font-semibold text-slate-600">
-        New to Attyre?{' '}
+        {isAdminLogin ? 'Need a customer account?' : 'New to Attyre?'}{' '}
         <Link href={`/register?next=${encodeURIComponent(nextUrl)}`} className="font-black text-primary-darker hover:text-primary">
           Create an account
         </Link>

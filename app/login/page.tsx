@@ -4,8 +4,8 @@ import { LoginForm } from '@/components/auth';
 import { PageContainer, LoadingState } from '@/components/ui';
 
 export const metadata: Metadata = {
-  title: 'Customer Login',
-  description: 'Log in to your Attyre customer account.',
+  title: 'Login',
+  description: 'Log in to your Attyre customer or admin account.',
 };
 
 export default function LoginPage() {

@@ -620,4 +620,77 @@ Security notes for the assignment:
 - Passwords are stored as bcrypt hashes, not plain text.
 - Session data is stored in an HTTP-only cookie, not localStorage.
 - Customer order history is filtered by the logged-in customer ID.
-- Admin route protection is intentionally left for the later admin authentication issue.
+- Admin route protection is implemented in Issue 11 under `/admin`.
+
+
+## Issue 11 - Admin Authentication, Route Protection, and Admin Layout
+
+Issue 11 adds the protected administration area for the Attyre store owner. It uses the same email/password session system from Issue 10, but restricts `/admin` pages to users with the `admin` role.
+
+Implemented admin features:
+
+- protected `/admin` route group
+- server-side admin access check in `app/admin/layout.tsx`
+- guest users are redirected to `/login?next=/admin`
+- logged-in customer users are blocked with an access denied screen
+- seeded admin users can open the admin dashboard
+- reusable admin sidebar/top layout
+- admin account display and admin logout button
+- protected admin placeholder routes for future issues:
+  - `/admin/products`
+  - `/admin/categories`
+  - `/admin/orders`
+- admin helper functions in `lib/auth/admin.ts`
+
+Admin routes:
+
+```text
+/admin
+/admin/products
+/admin/categories
+/admin/orders
+```
+
+Manual testing flow:
+
+```bash
+npm run seed
+npm run dev
+```
+
+Then test:
+
+```text
+/admin                         # guest should redirect to /login?next=/admin
+/login?next=/admin             # log in as admin
+/admin                         # admin dashboard should open
+/admin/products                # protected placeholder should open
+/admin/categories              # protected placeholder should open
+/admin/orders                  # protected placeholder should open
+```
+
+Default seeded admin credentials come from environment variables:
+
+```env
+ADMIN_EMAIL=admin@attyre.com
+ADMIN_PASSWORD=SecurePassword123!
+```
+
+For testing customer blocking:
+
+1. Register or log in as a normal customer.
+2. Open `/admin`.
+3. Confirm the access denied screen appears instead of the admin dashboard.
+
+Important files:
+
+```text
+app/admin/layout.tsx                    # Server-side admin guard and protected layout wrapper
+app/admin/page.tsx                      # Protected admin dashboard landing page
+app/admin/products/page.tsx             # Protected product admin placeholder
+app/admin/categories/page.tsx           # Protected category admin placeholder
+app/admin/orders/page.tsx               # Protected order admin placeholder
+components/admin/AdminShell.tsx         # Admin navigation/sidebar layout
+components/admin/AdminLogoutButton.tsx  # Admin logout action
+lib/auth/admin.ts                       # Admin role helper functions
+```
