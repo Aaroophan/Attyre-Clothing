@@ -38,7 +38,7 @@ export function DashboardCard({
   const content = (
     <article
       className={cn(
-        'rounded-[1.4rem] border p-5 shadow-sm transition md:p-6',
+        'rounded-[1.4rem] border p-5 shadow-sm transition md:p-6 min-h-65',
         toneClasses[tone],
         href && 'hover:-translate-y-0.5 hover:shadow-lg',
       )}
@@ -46,7 +46,7 @@ export function DashboardCard({
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">{title}</p>
-          <p className="mt-3 text-3xl font-black tracking-tight text-dark md:text-3xl">{value}</p>
+          <p className="mt-3 text-2xl font-black tracking-tight text-dark md:text-2xl">{value}</p>
         </div>
         {icon ? (
           <div className={cn('rounded-xl border p-2', iconToneClasses[tone])} aria-hidden="true">

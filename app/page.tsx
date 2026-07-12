@@ -156,7 +156,7 @@ export default async function Home() {
               Online clothing store
             </p>
             <h1 className="text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">
-              Build your everyday wardrobe with <span className="text-7xl font-black bg-gradient-to-r from-white via-white to-white bg-clip-text text-transparent px-1" style={{ fontFamily: 'Mistral, "Brush Script MT", cursive' }} >{SITE_NAME}</span>
+              Build your everyday wardrobe with <span className="inline-block px-1 text-5xl font-black bg-gradient-to-r from-white via-white to-white bg-clip-text text-transparent sm:text-6xl lg:text-7xl" style={{ fontFamily: 'Mistral, "Brush Script MT", cursive' }} >{SITE_NAME}</span>
             </h1>
             <p className="mt-5 text-base leading-8 text-slate-200 sm:text-lg">
               A clean clothing storefront for browsing menswear, womenswear, accessories, sale picks, and new arrivals with a simple Cash on Delivery shopping flow.
@@ -200,7 +200,7 @@ export default async function Home() {
                     alt={`${heroProduct.name} storefront feature`}
                     width={520}
                     height={460}
-                    className="aspect-[4/3] w-full object-cover"
+                    className="aspect-[3/4] w-full object-cover sm:aspect-[4/3]"
                     priority
                   />
                 </div>

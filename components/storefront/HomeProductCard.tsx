@@ -33,14 +33,14 @@ export function HomeProductCard({
   const displayPrice = salePrice ?? price;
 
   return (
-    <article className="card group flex h-full flex-col overflow-hidden">
-      <Link href={`/shop/${slug}`} className="relative block overflow-hidden bg-slate-100">
+    <article className="card group flex h-full flex-col overflow-hidden" aria-label={`${name}, ${getStockLabel(stock)}`}>
+      <Link href={`/shop/${slug}`} className="relative block overflow-hidden bg-slate-100 focus-visible:outline-offset-[-3px]">
         <Image
           src={image}
-          alt={`${name} product preview`}
+          alt={name}
           width={520}
           height={500}
-          className="aspect-[4/3] w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+          className="aspect-[3/4] w-full object-cover transition duration-300 group-hover:scale-[1.025] sm:aspect-[4/3]"
         />
         {salePrice ? (
           <span className="absolute left-3 top-3 rounded-full bg-primary-darker px-2.5 py-1 text-[0.65rem] font-black uppercase tracking-[0.12em] text-white">
@@ -78,7 +78,7 @@ export function HomeProductCard({
               </span>
             ) : null}
           </div>
-          <Link href={`/shop/${slug}`} className="shrink-0 text-sm font-black text-primary-darker hover:text-primary">
+          <Link href={`/shop/${slug}`} className="shrink-0 rounded-full px-2 py-1 text-sm font-black text-primary-darker hover:bg-sky-50 hover:text-primary">
             View
           </Link>
         </div>

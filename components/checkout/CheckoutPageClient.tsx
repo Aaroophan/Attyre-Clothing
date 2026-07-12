@@ -65,12 +65,12 @@ function validateCheckoutForm(form: CheckoutFormState): FieldErrors {
   return errors;
 }
 
-function FieldError({ message }: { message?: string }) {
+function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) {
     return null;
   }
 
-  return <p className="mt-2 text-sm font-semibold text-red-600">{message}</p>;
+  return <p id={id} className="mt-2 text-sm font-semibold text-red-600">{message}</p>;
 }
 
 function TextInput({
@@ -92,18 +92,25 @@ function TextInput({
   placeholder?: string;
   required?: boolean;
 }) {
+  const fieldId = `checkout-${String(name)}`;
+  const errorId = `${fieldId}-error`;
+
   return (
-    <label className="block">
+    <label className="block" htmlFor={fieldId}>
       <span className="text-sm font-black text-slate-700">{label}{required ? <span className="text-red-500"> *</span> : null}</span>
       <input
+        id={fieldId}
         type={type}
         name={name}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
+        required={required}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? errorId : undefined}
         className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-dark outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-sky-100"
       />
-      <FieldError message={error} />
+      <FieldError id={errorId} message={error} />
     </label>
   );
 }
@@ -125,18 +132,25 @@ function TextArea({
   placeholder?: string;
   required?: boolean;
 }) {
+  const fieldId = `checkout-${String(name)}`;
+  const errorId = `${fieldId}-error`;
+
   return (
-    <label className="block">
+    <label className="block" htmlFor={fieldId}>
       <span className="text-sm font-black text-slate-700">{label}{required ? <span className="text-red-500"> *</span> : null}</span>
       <textarea
+        id={fieldId}
         name={name}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
         rows={4}
+        required={required}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? errorId : undefined}
         className="mt-2 w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-dark outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-sky-100"
       />
-      <FieldError message={error} />
+      <FieldError id={errorId} message={error} />
     </label>
   );
 }
@@ -344,16 +358,20 @@ export function CheckoutPageClient() {
 
           <label className="mt-5 flex gap-3 rounded-2xl border border-sky-100 bg-sky-50 p-4 text-sm font-semibold text-primary-darker">
             <input
+              id="checkout-agree-to-cod"
               type="checkbox"
               name="agreeToCod"
               checked={form.agreeToCod}
               onChange={handleInputChange}
               className="mt-1 h-4 w-4 rounded border-slate-300 text-primary-darker"
+              required
+              aria-invalid={Boolean(fieldErrors.agreeToCod)}
+              aria-describedby={fieldErrors.agreeToCod ? 'checkout-agree-to-cod-error' : undefined}
             />
             <span>I understand this order will use Cash on Delivery.</span>
           </label>
-          <FieldError message={fieldErrors.agreeToCod} />
-          <FieldError message={fieldErrors.items} />
+          <FieldError id="checkout-agree-to-cod-error" message={fieldErrors.agreeToCod} />
+          <FieldError id="checkout-items-error" message={fieldErrors.items} />
 
           <button type="submit" disabled={isSubmitting} className="btn-primary mt-5 w-full disabled:cursor-not-allowed disabled:border-slate-300 disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none">
             {isSubmitting ? 'Placing order...' : 'Place Cash on Delivery order'}

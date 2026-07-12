@@ -13,7 +13,7 @@ export function PageContainer({
   as: Component = 'div',
 }: PageContainerProps) {
   return (
-    <Component className={cn('container-max', className)}>
+    <Component className={cn('p-5 max-w-[90vw] mx-auto', className)}>
       {children}
     </Component>
   );

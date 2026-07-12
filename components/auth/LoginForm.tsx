@@ -33,8 +33,8 @@ function validateLoginForm(form: LoginFormState): FieldErrors {
   return errors;
 }
 
-function FieldError({ message }: { message?: string }) {
-  return message ? <p className="mt-2 text-sm font-semibold text-red-600">{message}</p> : null;
+function FieldError({ id, message }: { id: string; message?: string }) {
+  return message ? <p id={id} className="mt-2 text-sm font-semibold text-red-600">{message}</p> : null;
 }
 
 export function LoginForm() {
@@ -111,27 +111,37 @@ export function LoginForm() {
         <label className="block">
           <span className="text-sm font-black text-slate-700">Email <span className="text-red-500">*</span></span>
           <input
+            id="login-email"
             type="email"
             name="email"
             value={form.email}
             onChange={handleChange}
             placeholder="customer@example.com"
+            autoComplete="email"
+            required
+            aria-invalid={Boolean(fieldErrors.email)}
+            aria-describedby={fieldErrors.email ? 'login-email-error' : undefined}
             className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-dark outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-sky-100"
           />
-          <FieldError message={fieldErrors.email} />
+          <FieldError id="login-email-error" message={fieldErrors.email} />
         </label>
 
         <label className="block">
           <span className="text-sm font-black text-slate-700">Password <span className="text-red-500">*</span></span>
           <input
+            id="login-password"
             type="password"
             name="password"
             value={form.password}
             onChange={handleChange}
             placeholder="Enter your password"
+            autoComplete="current-password"
+            required
+            aria-invalid={Boolean(fieldErrors.password)}
+            aria-describedby={fieldErrors.password ? 'login-password-error' : undefined}
             className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-dark outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-sky-100"
           />
-          <FieldError message={fieldErrors.password} />
+          <FieldError id="login-password-error" message={fieldErrors.password} />
         </label>
       </div>
 

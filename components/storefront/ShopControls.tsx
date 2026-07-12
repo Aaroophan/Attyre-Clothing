@@ -37,7 +37,7 @@ export function ShopControls({
 }: ShopControlsProps) {
   return (
     <div className="card p-4 sm:p-5 md:p-6">
-      <form action="/shop" className="grid gap-4 lg:grid-cols-[1fr_14rem_auto_auto] lg:items-end">
+      <form action="/shop" role="search" aria-label="Filter and sort products" className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_14rem_auto_auto] lg:items-end">
         {selectedCategory ? <input type="hidden" name="category" value={selectedCategory} /> : null}
         <div>
           <label htmlFor="shop-search" className="text-xs font-black uppercase tracking-[0.2em] text-slate-500">
@@ -49,7 +49,7 @@ export function ShopControls({
             type="search"
             defaultValue={searchQuery}
             placeholder="Search shirts, dresses, belts..."
-            className="mt-2 h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-medium text-dark outline-none transition focus:border-primary focus:ring-4 focus:ring-sky-100"
+            className="input-shell mt-2"
           />
         </div>
 
@@ -61,7 +61,7 @@ export function ShopControls({
             id="shop-sort"
             name="sort"
             defaultValue={sort}
-            className="mt-2 h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-dark outline-none transition focus:border-primary focus:ring-4 focus:ring-sky-100"
+            className="input-shell mt-2"
           >
             <option value="newest">Newest first</option>
             <option value="price-asc">Price: low to high</option>
@@ -79,7 +79,7 @@ export function ShopControls({
         </Link>
       </form>
 
-      <div className="mt-5 flex flex-wrap gap-2">
+      <nav className="mt-5 flex flex-wrap gap-2" aria-label="Product categories">
         <Link
           href={buildShopHref({ q: searchQuery, sort })}
           className={cn(
@@ -106,7 +106,7 @@ export function ShopControls({
             {category.name} <span className="opacity-75">({category.productCount})</span>
           </Link>
         ))}
-      </div>
+      </nav>
 
       <p className="mt-5 rounded-2xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600">
         Showing <span className="text-primary-darker">{filteredProducts}</span> of{' '}

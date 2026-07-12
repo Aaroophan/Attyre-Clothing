@@ -1133,3 +1133,56 @@ Recommended Issue 18 evidence:
 DevTools Network response for invalid admin API ID
 DevTools Network response headers showing security headers
 ```
+
+## Issue 19 - Responsive Design, Accessibility, and UI Polish
+
+Issue 19 adds the final responsive and accessibility polish pass before testing/deployment evidence collection.
+
+Implemented improvements:
+
+- global skip-to-content link for keyboard users
+- visible focus indicator across links, buttons, inputs, selects, and textareas
+- reduced-motion support through `prefers-reduced-motion`
+- tighter mobile containers and consistent card/button spacing
+- improved responsive header and mobile navigation behavior
+- corrected desktop Login button contrast
+- responsive admin shell with horizontal admin navigation on smaller screens
+- scrollable admin tables with mobile scroll notices
+- accessible table captions for admin data tables
+- improved product grid density across mobile, tablet, laptop, and desktop
+- improved product card image ratios, alt text, stock labels, and focus behavior
+- improved auth and checkout fields with required attributes, autocomplete hints, aria-invalid, and aria-describedby
+- added `data-scroll-behavior="smooth"` on the root html element to match the app's smooth scrolling behavior
+
+Recommended responsive evidence routes:
+
+```
+/
+/shop
+/shop/classic-white-shirt
+/cart
+/checkout
+/contact
+/admin
+/admin/products
+/admin/categories
+/admin/inventory
+/admin/orders
+```
+
+Recommended viewport widths:
+
+```
+390px mobile
+768px tablet
+1024px laptop
+1440px desktop
+```
+
+Validation commands:
+
+```bash
+npm run lint
+npx tsc --noEmit
+npm run build
+```

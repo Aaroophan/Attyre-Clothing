@@ -51,8 +51,8 @@ function validateRegisterForm(form: RegisterFormState): FieldErrors {
   return errors;
 }
 
-function FieldError({ message }: { message?: string }) {
-  return message ? <p className="mt-2 text-sm font-semibold text-red-600">{message}</p> : null;
+function FieldError({ id, message }: { id: string; message?: string }) {
+  return message ? <p id={id} className="mt-2 text-sm font-semibold text-red-600">{message}</p> : null;
 }
 
 export function RegisterForm() {
@@ -126,66 +126,90 @@ export function RegisterForm() {
         <label className="block md:col-span-2">
           <span className="text-sm font-black text-slate-700">Full name <span className="text-red-500">*</span></span>
           <input
+            id="register-name"
             type="text"
             name="name"
             value={form.name}
             onChange={handleChange}
             placeholder="Aaroophan Varatharajan"
+            autoComplete="name"
+            required
+            aria-invalid={Boolean(fieldErrors.name)}
+            aria-describedby={fieldErrors.name ? 'register-name-error' : undefined}
             className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-dark outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-sky-100"
           />
-          <FieldError message={fieldErrors.name} />
+          <FieldError id="register-name-error" message={fieldErrors.name} />
         </label>
 
         <label className="block">
           <span className="text-sm font-black text-slate-700">Email <span className="text-red-500">*</span></span>
           <input
+            id="register-email"
             type="email"
             name="email"
             value={form.email}
             onChange={handleChange}
             placeholder="customer@example.com"
+            autoComplete="email"
+            required
+            aria-invalid={Boolean(fieldErrors.email)}
+            aria-describedby={fieldErrors.email ? 'register-email-error' : undefined}
             className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-dark outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-sky-100"
           />
-          <FieldError message={fieldErrors.email} />
+          <FieldError id="register-email-error" message={fieldErrors.email} />
         </label>
 
         <label className="block">
           <span className="text-sm font-black text-slate-700">Phone</span>
           <input
+            id="register-phone"
             type="tel"
             name="phone"
             value={form.phone}
             onChange={handleChange}
             placeholder="+94 76 000 0000"
+            autoComplete="tel"
+            aria-invalid={Boolean(fieldErrors.phone)}
+            aria-describedby={fieldErrors.phone ? 'register-phone-error' : undefined}
             className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-dark outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-sky-100"
           />
-          <FieldError message={fieldErrors.phone} />
+          <FieldError id="register-phone-error" message={fieldErrors.phone} />
         </label>
 
         <label className="block">
           <span className="text-sm font-black text-slate-700">Password <span className="text-red-500">*</span></span>
           <input
+            id="register-password"
             type="password"
             name="password"
             value={form.password}
             onChange={handleChange}
             placeholder="At least 8 characters"
+            autoComplete="new-password"
+            required
+            aria-invalid={Boolean(fieldErrors.password)}
+            aria-describedby={fieldErrors.password ? 'register-password-error' : undefined}
             className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-dark outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-sky-100"
           />
-          <FieldError message={fieldErrors.password} />
+          <FieldError id="register-password-error" message={fieldErrors.password} />
         </label>
 
         <label className="block">
           <span className="text-sm font-black text-slate-700">Confirm password <span className="text-red-500">*</span></span>
           <input
+            id="register-confirm-password"
             type="password"
             name="confirmPassword"
             value={form.confirmPassword}
             onChange={handleChange}
             placeholder="Repeat your password"
+            autoComplete="new-password"
+            required
+            aria-invalid={Boolean(fieldErrors.confirmPassword)}
+            aria-describedby={fieldErrors.confirmPassword ? 'register-confirm-password-error' : undefined}
             className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-dark outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-sky-100"
           />
-          <FieldError message={fieldErrors.confirmPassword} />
+          <FieldError id="register-confirm-password-error" message={fieldErrors.confirmPassword} />
         </label>
       </div>
 

@@ -176,7 +176,7 @@ export default async function AdminDashboardPage() {
               </p>
             </div>
             <Link href="/admin/orders" className="btn-secondary mt-4 w-full md:mt-0 md:w-auto">
-              View all orders
+              View all
             </Link>
           </div>
 

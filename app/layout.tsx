@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { Suspense } from 'react';
 import { CartProvider } from '@/components/cart/CartProvider';
 import { AppFooter, AppHeader } from '@/components/layout';
 import { SITE_DESCRIPTION, SITE_NAME } from '@/lib/constants';
@@ -38,12 +39,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body className="bg-[#f7fbfd] text-dark antialiased">
         <CartProvider>
           <div className="flex min-h-screen flex-col">
-            <AppHeader />
-            <main className="flex-1">{children}</main>
+            <a href="#main-content" className="skip-link">Skip to main content</a>
+            <Suspense fallback={<div className="min-h-16 border-b border-slate-200 bg-white sm:min-h-20" />}><AppHeader /></Suspense>
+            <main id="main-content" tabIndex={-1} className="flex-1 focus:outline-none">{children}</main>
             <AppFooter />
           </div>
         </CartProvider>

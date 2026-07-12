@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useCart } from '@/components/cart/CartProvider';
 import { SITE_NAME } from '@/lib/constants';
@@ -33,10 +33,27 @@ function isActiveLink(pathname: string, href: string): boolean {
 
 export function AppHeader() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<PublicUser | null>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { totals } = useCart();
+
+  function isCurrentItem(item: { href: string; category?: string }): boolean {
+    if (item.category) {
+      return pathname === '/shop' && searchParams.get('category') === item.category;
+    }
+
+    if (item.href === '/shop') {
+      return (pathname === '/shop' && !searchParams.get('category')) || pathname.startsWith('/shop/');
+    }
+
+    return isActiveLink(pathname, item.href);
+  }
+
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     let isMounted = true;
@@ -76,9 +93,9 @@ export function AppHeader() {
   }
 
   return (
-    <header className="border-b border-slate-200 bg-white">
+    <header className="border-b border-slate-200 bg-white/95 backdrop-blur">
       <div className="container-max">
-        <div className="flex min-h-20 items-center justify-between gap-4 py-3">
+        <div className="flex min-h-16 items-center justify-between gap-3 py-3 sm:min-h-20 sm:gap-4">
           <Link href="/" className="flex shrink-0 items-center gap-3" aria-label="Attyre home">
             <span className="leading-none">
               <span className="block text-3xl font-black tracking-wide scale-200 bg-gradient-to-r from-primary via-primary-dark to-primary-darker bg-clip-text text-transparent px-1" style={{ fontFamily: 'Mistral, "Brush Script MT", cursive' }} >
@@ -89,7 +106,7 @@ export function AppHeader() {
 
           <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary navigation">
             {primaryNavItems.map((item) => {
-              const active = isActiveLink(pathname, item.href);
+              const active = isCurrentItem(item);
 
               return (
                 <Link
@@ -147,7 +164,7 @@ export function AppHeader() {
               </>
             ) : (
               <>
-                <Link href="/login" className="inline-flex min-h-10 items-center justify-center rounded-full bg-primary px-4 text-sm font-bold text-slate-600 transition hover:bg-slate-100 hover:text-dark">
+                <Link href="/login" className="inline-flex min-h-10 items-center justify-center rounded-full bg-primary px-4 text-sm font-bold text-white transition hover:bg-primary-dark">
                   Login
                 </Link>
                 <Link href="/register" className="inline-flex min-h-10 items-center justify-center rounded-full px-4 text-sm font-bold text-slate-600 transition hover:bg-slate-100 hover:text-dark">
@@ -161,10 +178,11 @@ export function AppHeader() {
             type="button"
             className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-dark transition hover:bg-slate-50 lg:hidden"
             aria-label="Toggle navigation menu"
+            aria-controls="mobile-primary-navigation"
             aria-expanded={isMenuOpen}
             onClick={() => setIsMenuOpen((current) => !current)}
           >
-            <span className="flex w-5 flex-col gap-1.5">
+            <span aria-hidden="true" className="flex w-5 flex-col gap-1.5">
               <span className="h-0.5 rounded-full bg-current" />
               <span className="h-0.5 rounded-full bg-current" />
               <span className="h-0.5 rounded-full bg-current" />
@@ -173,14 +191,14 @@ export function AppHeader() {
         </div>
 
         {isMenuOpen ? (
-          <nav className="grid gap-2 border-t border-slate-100 py-4 lg:hidden" aria-label="Mobile navigation">
+          <nav id="mobile-primary-navigation" className="grid gap-2 border-t border-slate-100 py-4 lg:hidden" aria-label="Mobile navigation">
             {[
               ...primaryNavItems,
               { href: '/cart', label: 'Cart' },
               ...(currentUser ? [{ href: '/account/orders', label: 'Orders' }] : [{ href: '/login', label: 'Login' }, { href: '/register', label: 'Register' }]),
               { href: '/admin', label: 'Admin' },
             ].map((item) => {
-              const active = isActiveLink(pathname, item.href);
+              const active = isCurrentItem(item);
 
               return (
                 <Link

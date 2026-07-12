@@ -40,14 +40,14 @@ export function ProductCard({
   const isOutOfStock = stock <= 0;
 
   return (
-    <article className={cn('card group flex h-full flex-col overflow-hidden', isOutOfStock && 'opacity-80')}>
-      <Link href={`/shop/${slug}`} className="relative block overflow-hidden bg-slate-100">
+    <article className={cn('card group flex h-full flex-col overflow-hidden', isOutOfStock && 'opacity-85')} aria-label={`${name}, ${getStockLabel(stock)}`}>
+      <Link href={`/shop/${slug}`} className="relative block overflow-hidden bg-slate-100 focus-visible:outline-offset-[-3px]" aria-label={`View ${name}`}>
         <Image
           src={image}
-          alt={`${name} product image`}
+          alt={name}
           width={560}
-          height={520}
-          className={cn('aspect-[4/3] w-full object-cover transition duration-300 group-hover:scale-[1.03]', isOutOfStock && 'grayscale')}
+          height={700}
+          className={cn('aspect-[3/4] w-full object-cover transition duration-300 group-hover:scale-[1.025]', isOutOfStock && 'grayscale')}
         />
         <div className="absolute left-3 top-3 flex flex-wrap gap-2">
           {salePrice ? (
@@ -63,9 +63,9 @@ export function ProductCard({
         </div>
       </Link>
 
-      <div className="flex flex-1 flex-col p-4 sm:p-5">
-        <div className="mb-3 flex items-center justify-between gap-3">
-          <p className="truncate text-[0.68rem] font-black uppercase tracking-[0.18em] text-primary-darker">
+      <div className="flex flex-1 flex-col p-4">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <p className="max-w-full truncate text-[0.68rem] font-black uppercase tracking-[0.18em] text-primary-darker">
             {categoryName}
           </p>
           <span className={cn('shrink-0 rounded-full border px-2.5 py-1 text-[0.68rem] font-bold', getStockClassName(stock))}>
@@ -73,7 +73,7 @@ export function ProductCard({
           </span>
         </div>
 
-        <h3 className="text-lg font-black leading-6 text-dark">
+        <h3 className="text-base font-black leading-6 text-dark sm:text-lg">
           <Link href={`/shop/${slug}`} className="transition hover:text-primary-darker">
             {name}
           </Link>
@@ -87,13 +87,13 @@ export function ProductCard({
               {formatPrice(displayPrice, CURRENCY)}
             </span>
             {salePrice ? (
-              <span className="pb-0.5 text-xs font-semibold text-slate-400 line-through">
+              <span className="pb-0.5 text-xs font-semibold text-slate-500 line-through">
                 {formatPrice(price, CURRENCY)}
               </span>
             ) : null}
           </div>
 
-          <Link href={`/shop/${slug}`} className="btn-primary mt-4 w-full">
+          <Link href={`/shop/${slug}`} className="btn-primary mt-4 w-full" aria-label={`View details for ${name}`}>
             View product
           </Link>
         </div>

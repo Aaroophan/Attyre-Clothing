@@ -194,8 +194,10 @@ export default async function AdminProductsPage({ searchParams }: AdminProductsP
             />
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-[920px] w-full text-left text-sm">
+          <>
+            <p className="table-scroll-note sm:hidden">Swipe horizontally to view all table columns.</p>
+          <div className="admin-table-wrap" tabIndex={0} aria-label="Scrollable admin table">
+            <table className="responsive-table min-w-[920px] w-full text-left text-sm"><caption className="sr-only-custom">Admin products table</caption>
               <thead className="border-b border-slate-100 bg-slate-50 text-xs font-black uppercase tracking-[0.14em] text-slate-500">
                 <tr>
                   <th className="px-5 py-4">Product</th>
@@ -269,6 +271,7 @@ export default async function AdminProductsPage({ searchParams }: AdminProductsP
               </tbody>
             </table>
           </div>
+          </>
         )}
       </section>
     </div>

@@ -93,8 +93,9 @@ export default async function AdminOrderPage({ params }: AdminOrderPageProps) {
               </span>
             </div>
 
-            <div className="mt-5 overflow-x-auto">
-              <table className="min-w-[720px] w-full text-left text-sm">
+            <p className="table-scroll-note mt-5 sm:hidden">Swipe horizontally to view all order item columns.</p>
+            <div className="admin-table-wrap" tabIndex={0} aria-label="Scrollable order items table">
+              <table className="responsive-table min-w-[720px] w-full text-left text-sm"><caption className="sr-only-custom">Order items table</caption>
                 <thead className="border-b border-slate-100 bg-slate-50 text-xs font-black uppercase tracking-[0.14em] text-slate-500">
                   <tr>
                     <th className="rounded-l-2xl px-4 py-3">Product</th>

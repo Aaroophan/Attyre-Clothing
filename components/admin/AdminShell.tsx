@@ -53,10 +53,10 @@ export function AdminShell({ user, children }: AdminShellProps) {
   const pathname = usePathname();
 
   return (
-    <section className="bg-slate-50 py-6 md:py-8">
+    <section className="bg-slate-50 py-4 sm:py-6 lg:py-8">
       <div className="p-5 max-w-[90vw] mx-auto">
-        <div className="grid gap-5 lg:grid-cols-[18rem_minmax(0,1fr)]">
-          <aside className="card h-fit overflow-hidden lg:sticky lg:top-6">
+        <div className="grid gap-5 xl:grid-cols-[18rem_minmax(0,1fr)]">
+          <aside className="card h-fit overflow-hidden xl:sticky xl:top-6" aria-label="Admin account and navigation">
             <div className="border-b border-slate-100 bg-gradient-to-br from-primary-darker to-primary-dark p-5 text-white">
               <p className="text-xs font-black uppercase tracking-[0.22em] text-sky-100">Admin area</p>
               <h2 className="mt-2 text-2xl font-black tracking-tight">{SITE_NAME}</h2>
@@ -65,14 +65,14 @@ export function AdminShell({ user, children }: AdminShellProps) {
               </p>
             </div>
 
-            <div className="p-4">
+            <div className="grid gap-4 p-4 lg:grid-cols-[minmax(14rem,18rem)_minmax(0,1fr)_auto] lg:items-center xl:block">
               <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">Signed in as</p>
                 <p className="mt-1 truncate text-sm font-black text-dark">{user.name}</p>
                 <p className="mt-1 truncate text-xs font-semibold text-slate-500">{user.email}</p>
               </div>
 
-              <nav className="mt-4 grid gap-2" aria-label="Admin navigation">
+              <nav className="flex gap-2 overflow-x-auto pb-1 lg:pb-0 xl:mt-4 xl:grid xl:overflow-visible" aria-label="Admin navigation">
                 {adminNavItems.map((item) => {
                   const active = isActiveAdminLink(pathname, item.href);
 
@@ -82,7 +82,7 @@ export function AdminShell({ user, children }: AdminShellProps) {
                       href={item.href}
                       aria-current={active ? 'page' : undefined}
                       className={cn(
-                        'rounded-2xl border px-4 py-3 transition',
+                        'min-w-40 rounded-2xl border px-4 py-3 transition xl:min-w-0',
                         active
                           ? 'border-sky-200 bg-sky-50 text-primary-darker shadow-sm'
                           : 'border-transparent text-slate-700 hover:border-slate-200 hover:bg-white hover:text-dark',
@@ -95,7 +95,7 @@ export function AdminShell({ user, children }: AdminShellProps) {
                 })}
               </nav>
 
-              <div className="mt-4 grid gap-2 border-t border-slate-100 pt-4">
+              <div className="grid gap-2 border-t border-slate-100 pt-4 lg:border-l lg:border-t-0 lg:pl-4 lg:pt-0 xl:mt-4 xl:border-l-0 xl:border-t xl:pl-0 xl:pt-4">
                 <Link href="/" className="btn-secondary w-full text-xs">
                   View storefront
                 </Link>
@@ -105,18 +105,6 @@ export function AdminShell({ user, children }: AdminShellProps) {
           </aside>
 
           <div className="min-w-0">
-            <div className="mb-5 rounded-3xl border border-sky-100 bg-white p-4 shadow-sm md:flex md:items-center md:justify-between md:gap-4 md:p-5">
-              <div>
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-primary-darker">Protected dashboard</p>
-                <p className="mt-1 text-sm font-semibold text-slate-600">
-                  Only users with the <span className="font-black text-dark">admin</span> role can access these pages.
-                </p>
-              </div>
-              <span className="mt-3 inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-emerald-700 md:mt-0">
-                Admin verified
-              </span>
-            </div>
-
             {children}
           </div>
         </div>
