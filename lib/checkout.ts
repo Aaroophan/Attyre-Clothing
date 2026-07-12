@@ -48,6 +48,30 @@ function normalizeCustomerInfo(input: unknown): CheckoutCustomerInput {
 function validateCustomerInfo(customerInfo: CheckoutCustomerInput): Record<string, string> {
   const fieldErrors: Record<string, string> = {};
 
+  if (customerInfo.name.length > 80) {
+    fieldErrors.name = 'Name must be 80 characters or fewer.';
+  }
+
+  if (customerInfo.email.length > 254) {
+    fieldErrors.email = 'Email must be 254 characters or fewer.';
+  }
+
+  if (customerInfo.address.length > 180) {
+    fieldErrors.address = 'Address must be 180 characters or fewer.';
+  }
+
+  if (customerInfo.city.length > 80) {
+    fieldErrors.city = 'City must be 80 characters or fewer.';
+  }
+
+  if (customerInfo.district.length > 80) {
+    fieldErrors.district = 'District must be 80 characters or fewer.';
+  }
+
+  if (customerInfo.note && customerInfo.note.length > 220) {
+    fieldErrors.note = 'Order note must be 220 characters or fewer.';
+  }
+
   if (!customerInfo.name) {
     fieldErrors.name = 'Name is required.';
   }
@@ -84,6 +108,10 @@ function normalizeItems(input: unknown): ValidatedCheckoutItem[] {
     throw new CheckoutValidationError('Cart items are required.', 400, { items: 'Cart items are required.' });
   }
 
+  if (input.length > 50) {
+    throw new CheckoutValidationError('Cart contains too many line items.', 400, { items: 'Please reduce the number of cart items.' });
+  }
+
   const items = input.map((item) => {
     const value = item && typeof item === 'object' ? item as Partial<CheckoutItemInput> : {};
     const productObjectId = tryObjectId(cleanText(value.productId));
@@ -93,8 +121,8 @@ function normalizeItems(input: unknown): ValidatedCheckoutItem[] {
       throw new CheckoutValidationError('One or more cart items are invalid.', 400, { items: 'One or more products have an invalid ID.' });
     }
 
-    if (!Number.isFinite(quantity) || quantity < 1) {
-      throw new CheckoutValidationError('One or more cart quantities are invalid.', 400, { items: 'Cart item quantities must be at least 1.' });
+    if (!Number.isFinite(quantity) || quantity < 1 || quantity > 999) {
+      throw new CheckoutValidationError('One or more cart quantities are invalid.', 400, { items: 'Cart item quantities must be between 1 and 999.' });
     }
 
     return {

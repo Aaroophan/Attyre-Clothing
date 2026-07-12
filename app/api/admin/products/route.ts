@@ -1,34 +1,19 @@
 import { NextResponse } from 'next/server';
-import { isAdminUser } from '@/lib/auth/admin';
-import { getCurrentUser } from '@/lib/auth/session';
 import { createProduct, findAnyProductBySlug, objectIdToString } from '@/lib/db';
-import { validateProductPayload } from '@/lib/admin-product-validation';
+import { validateProductPayload, type ProductPayload } from '@/lib/admin-product-validation';
+import { readJsonRequest, requestBodyErrorResponse, requireAdminApi, safeLogError } from '@/lib/api';
 
 export const dynamic = 'force-dynamic';
 
-async function requireAdminResponse() {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    return NextResponse.json({ ok: false, message: 'Login is required.' }, { status: 401 });
-  }
-
-  if (!isAdminUser(user)) {
-    return NextResponse.json({ ok: false, message: 'Admin access is required.' }, { status: 403 });
-  }
-
-  return null;
-}
-
 export async function POST(request: Request) {
-  const authError = await requireAdminResponse();
+  const { response } = await requireAdminApi();
 
-  if (authError) {
-    return authError;
+  if (response) {
+    return response;
   }
 
   try {
-    const payload = await request.json();
+    const payload = await readJsonRequest<ProductPayload>(request);
     const validation = await validateProductPayload(payload);
 
     if (!validation.input) {
@@ -55,7 +40,13 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true, productId: objectIdToString(product._id), slug: product.slug }, { status: 201 });
   } catch (error) {
-    console.error('Admin product creation failed:', error);
+    const bodyError = requestBodyErrorResponse(error);
+
+    if (bodyError) {
+      return bodyError;
+    }
+
+    safeLogError('Admin product creation failed:', error);
     return NextResponse.json({ ok: false, message: 'Product could not be created right now.' }, { status: 500 });
   }
 }

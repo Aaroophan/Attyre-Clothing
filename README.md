@@ -1085,3 +1085,51 @@ Notes:
 - The contact form is intentionally simulated and does not send email.
 - Cash on Delivery remains the only payment method in this RAD assignment scope.
 - Delivery information is kept basic because there is no real courier integration in this version.
+
+## Validation, Error Handling, and Security Basics
+
+Issue 18 adds a defensive pass across the application so invalid input, malformed JSON, unsafe IDs, missing session configuration, and unauthorized admin access are handled with friendly responses instead of raw crashes.
+
+Implemented defensive behavior:
+
+- shared API helpers for safe JSON parsing, request body size limits, admin API guarding, and consistent JSON error responses
+- stronger customer registration/login validation for email length, password length, password strength, optional phone format, and name length
+- early `SESSION_SECRET` validation before customer creation so registration cannot half-succeed when auth is misconfigured
+- stricter product validation for name, description, category, price, sale price, stock, SKU, image path/URL, sizes, colors, and slug length
+- stricter checkout validation for customer field lengths, cart size, item quantity range, invalid product IDs, unavailable products, and stale stock
+- defensive admin API validation for invalid product/category/order IDs and invalid status actions
+- safe stock update validation for inventory changes
+- global not-found and error screens so invalid routes/items show user-friendly pages
+- basic security headers from `next.config.js`:
+  - `X-Content-Type-Options: nosniff`
+  - `X-Frame-Options: DENY`
+  - `Referrer-Policy: strict-origin-when-cross-origin`
+  - `Permissions-Policy: camera=(), microphone=(), geolocation=()`
+- `.env` and `.env.local` remain ignored by Git; only `.env.example` should be committed
+
+Important files:
+
+```
+lib/api.ts                         # Shared safe API helpers
+lib/auth/validation.ts             # Customer auth validation
+lib/admin-product-validation.ts     # Admin product validation
+lib/admin-category-validation.ts    # Admin category validation
+lib/checkout.ts                    # Checkout/order validation
+app/not-found.tsx                  # Friendly not-found page
+app/error.tsx                      # Friendly global error page
+next.config.js                     # Basic security headers
+```
+
+Recommended Issue 18 evidence:
+
+```
+/register validation errors
+/login invalid credentials
+/admin blocked as customer
+/admin/products/new product validation errors
+/admin/categories/new category validation errors
+/checkout validation errors
+/shop/not-a-real-product not-found page
+DevTools Network response for invalid admin API ID
+DevTools Network response headers showing security headers
+```

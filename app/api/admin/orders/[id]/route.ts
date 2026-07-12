@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { isAdminUser } from '@/lib/auth/admin';
-import { getCurrentUser } from '@/lib/auth/session';
 import { findOrderById, objectIdToString, updateOrderStatus } from '@/lib/db';
+import { isObjectIdString } from '@/lib/db/object-id';
 import { isOrderStatus, orderStatusLabel } from '@/lib/order-status';
+import { readJsonRequest, requestBodyErrorResponse, requireAdminApi, safeLogError } from '@/lib/api';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,28 +11,18 @@ interface AdminOrderRouteContext {
   params: Promise<{ id: string }>;
 }
 
-async function requireAdminResponse() {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    return { user: null, response: NextResponse.json({ ok: false, message: 'Login is required.' }, { status: 401 }) };
-  }
-
-  if (!isAdminUser(user)) {
-    return { user: null, response: NextResponse.json({ ok: false, message: 'Admin access is required.' }, { status: 403 }) };
-  }
-
-  return { user, response: null };
-}
-
 export async function PATCH(request: Request, { params }: AdminOrderRouteContext) {
-  const { user, response } = await requireAdminResponse();
+  const { user, response } = await requireAdminApi();
 
   if (response || !user) {
     return response;
   }
 
   const { id } = await params;
+
+  if (!isObjectIdString(id)) {
+    return NextResponse.json({ ok: false, message: 'Invalid order ID.' }, { status: 400 });
+  }
 
   try {
     const existingOrder = await findOrderById(id);
@@ -41,7 +31,7 @@ export async function PATCH(request: Request, { params }: AdminOrderRouteContext
       return NextResponse.json({ ok: false, message: 'Order was not found.' }, { status: 404 });
     }
 
-    const payload = await request.json() as { orderStatus?: unknown; note?: unknown };
+    const payload = await readJsonRequest<{ orderStatus?: unknown; note?: unknown }>(request);
 
     if (!isOrderStatus(payload.orderStatus)) {
       return NextResponse.json({ ok: false, message: 'Select a valid order status.' }, { status: 400 });
@@ -72,11 +62,13 @@ export async function PATCH(request: Request, { params }: AdminOrderRouteContext
       message: `Order marked as ${orderStatusLabel(updatedOrder.orderStatus)}.`,
     });
   } catch (error) {
-    if (error instanceof SyntaxError) {
-      return NextResponse.json({ ok: false, message: 'Invalid order status request.' }, { status: 400 });
+    const bodyError = requestBodyErrorResponse(error);
+
+    if (bodyError) {
+      return bodyError;
     }
 
-    console.error('Admin order status update failed:', error);
+    safeLogError('Admin order status update failed:', error);
     return NextResponse.json({ ok: false, message: 'Order status could not be updated right now.' }, { status: 500 });
   }
 }

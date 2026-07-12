@@ -2,14 +2,17 @@ import { NextResponse } from 'next/server';
 import { findUserByEmail } from '@/lib/db/users';
 import { verifyPassword } from '@/lib/auth/password';
 import { normalizeLoginInput, validateLoginInput } from '@/lib/auth/validation';
-import { setAuthSession } from '@/lib/auth/session';
+import { assertSessionSecretConfigured, setAuthSession } from '@/lib/auth/session';
+import { isConfigurationError, readJsonRequest, requestBodyErrorResponse, safeLogError } from '@/lib/api';
 import type { AuthResponse } from '@/types/auth';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   try {
-    const payload = await request.json();
+    assertSessionSecretConfigured();
+
+    const payload = await readJsonRequest(request);
     const input = normalizeLoginInput(payload);
     const fieldErrors = validateLoginInput(input);
 
@@ -40,18 +43,19 @@ export async function POST(request: Request) {
       message: 'Logged in successfully.',
     });
   } catch (error) {
-    if (error instanceof SyntaxError) {
-      return NextResponse.json<AuthResponse>({
-        ok: false,
-        message: 'Invalid login request. Please try again.',
-      }, { status: 400 });
+    const bodyError = requestBodyErrorResponse(error);
+
+    if (bodyError) {
+      return bodyError;
     }
 
-    console.error('Customer login failed:', error);
+    safeLogError('Customer login failed:', error);
 
     return NextResponse.json<AuthResponse>({
       ok: false,
-      message: 'Login failed right now. Please try again.',
+      message: isConfigurationError(error)
+        ? 'Authentication is not configured correctly. Please contact the store administrator.'
+        : 'Login failed right now. Please try again.',
     }, { status: 500 });
   }
 }

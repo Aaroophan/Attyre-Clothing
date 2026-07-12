@@ -8,7 +8,7 @@ import { objectIdToString } from '@/lib/db/object-id';
 export const AUTH_COOKIE_NAME = 'attyre_session';
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
 
-function getSessionSecret(): string {
+export function getSessionSecret(): string {
   const secret = process.env.SESSION_SECRET;
 
   if (!secret || secret === 'your-secret-key-here') {
@@ -40,6 +40,10 @@ function verifySignature(encodedPayload: string, signature: string): boolean {
   }
 
   return timingSafeEqual(expected, actual);
+}
+
+export function assertSessionSecretConfigured(): void {
+  getSessionSecret();
 }
 
 export function toPublicUser(user: UserDocument): PublicUser {

@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { isAdminUser } from '@/lib/auth/admin';
-import { getCurrentUser } from '@/lib/auth/session';
 import { deactivateProduct, findAnyProductBySlug, findProductById, objectIdToString, reactivateProduct, updateProduct } from '@/lib/db';
-import { validateProductPayload } from '@/lib/admin-product-validation';
+import { validateProductPayload, type ProductPayload } from '@/lib/admin-product-validation';
+import { isObjectIdString } from '@/lib/db/object-id';
+import { readJsonRequest, requestBodyErrorResponse, requireAdminApi, safeLogError } from '@/lib/api';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,28 +10,18 @@ interface AdminProductRouteContext {
   params: Promise<{ id: string }>;
 }
 
-async function requireAdminResponse() {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    return NextResponse.json({ ok: false, message: 'Login is required.' }, { status: 401 });
-  }
-
-  if (!isAdminUser(user)) {
-    return NextResponse.json({ ok: false, message: 'Admin access is required.' }, { status: 403 });
-  }
-
-  return null;
-}
-
 export async function PUT(request: Request, { params }: AdminProductRouteContext) {
-  const authError = await requireAdminResponse();
+  const { response } = await requireAdminApi();
 
-  if (authError) {
-    return authError;
+  if (response) {
+    return response;
   }
 
   const { id } = await params;
+
+  if (!isObjectIdString(id)) {
+    return NextResponse.json({ ok: false, message: 'Invalid product ID.' }, { status: 400 });
+  }
 
   try {
     const product = await findProductById(id);
@@ -40,7 +30,7 @@ export async function PUT(request: Request, { params }: AdminProductRouteContext
       return NextResponse.json({ ok: false, message: 'Product was not found.' }, { status: 404 });
     }
 
-    const payload = await request.json();
+    const payload = await readJsonRequest<ProductPayload>(request);
     const validation = await validateProductPayload(payload);
 
     if (!validation.input) {
@@ -71,23 +61,38 @@ export async function PUT(request: Request, { params }: AdminProductRouteContext
 
     return NextResponse.json({ ok: true, productId: objectIdToString(updatedProduct._id), slug: updatedProduct.slug });
   } catch (error) {
-    console.error('Admin product update failed:', error);
+    const bodyError = requestBodyErrorResponse(error);
+
+    if (bodyError) {
+      return bodyError;
+    }
+
+    safeLogError('Admin product update failed:', error);
     return NextResponse.json({ ok: false, message: 'Product could not be updated right now.' }, { status: 500 });
   }
 }
 
 export async function PATCH(request: Request, { params }: AdminProductRouteContext) {
-  const authError = await requireAdminResponse();
+  const { response } = await requireAdminApi();
 
-  if (authError) {
-    return authError;
+  if (response) {
+    return response;
   }
 
   const { id } = await params;
 
+  if (!isObjectIdString(id)) {
+    return NextResponse.json({ ok: false, message: 'Invalid product ID.' }, { status: 400 });
+  }
+
   try {
-    const payload = await request.json();
+    const payload = await readJsonRequest<{ action?: unknown }>(request);
     const action = typeof payload.action === 'string' ? payload.action : 'deactivate';
+
+    if (action !== 'deactivate' && action !== 'reactivate') {
+      return NextResponse.json({ ok: false, message: 'Invalid product status action.' }, { status: 400 });
+    }
+
     const success = action === 'reactivate' ? await reactivateProduct(id) : await deactivateProduct(id);
 
     if (!success) {
@@ -96,7 +101,13 @@ export async function PATCH(request: Request, { params }: AdminProductRouteConte
 
     return NextResponse.json({ ok: true });
   } catch (error) {
-    console.error('Admin product status update failed:', error);
+    const bodyError = requestBodyErrorResponse(error);
+
+    if (bodyError) {
+      return bodyError;
+    }
+
+    safeLogError('Admin product status update failed:', error);
     return NextResponse.json({ ok: false, message: 'Product status could not be changed right now.' }, { status: 500 });
   }
 }
