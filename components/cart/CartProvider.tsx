@@ -9,11 +9,10 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { DELIVERY_FEE } from '@/lib/constants';
 import type { AddCartItemInput, CartItem, CartTotals } from '@/types/cart';
 
 const CART_STORAGE_KEY = 'attyre-cart-items';
-const DELIVERY_FEE = 450;
-
 interface CartContextValue {
   items: CartItem[];
   totals: CartTotals;

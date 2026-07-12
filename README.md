@@ -501,3 +501,64 @@ Recommended viewport checks:
 1024px laptop
 1440px desktop
 ```
+
+## Issue 09 - Cash on Delivery Checkout and Order Placement
+
+Issue 09 replaces the placeholder checkout page with a real Cash on Delivery order flow.
+
+### Added Checkout Features
+
+- `/checkout` now shows a full delivery details form.
+- Checkout collects customer name, email, phone, address, city, district, and optional order note.
+- Cash on Delivery is the only available payment method.
+- Client-side validation prevents missing customer and delivery details.
+- `/api/orders` creates orders in MongoDB.
+- Server-side validation rechecks product IDs, quantities, active product status, size/color selections, current prices, and current stock.
+- The server ignores cart prices from local storage and calculates order totals from MongoDB products.
+- Product stock is reduced only after the order is accepted.
+- Order creation and stock reduction run inside a MongoDB transaction.
+- Cart is cleared after successful checkout.
+- Customers are redirected to `/order-success/[orderNumber]` after order placement.
+- The order success page displays order number, customer details, ordered items, totals, payment method, and status.
+
+### Checkout Routes
+
+```text
+/checkout
+/api/orders
+/order-success/[orderNumber]
+```
+
+### Testing Issue 09
+
+```bash
+npm install
+npm run seed
+npm run dev
+```
+
+Manual test flow:
+
+1. Open `/shop/classic-white-shirt`.
+2. Select size, color, and quantity.
+3. Add the product to cart.
+4. Open `/cart` and continue to checkout.
+5. Submit the checkout form with valid delivery details.
+6. Confirm the app redirects to `/order-success/[orderNumber]`.
+7. Check MongoDB Atlas `orders` collection for the new order document.
+8. Check the ordered product in MongoDB Atlas and confirm stock was reduced.
+9. Try submitting an empty checkout form and confirm validation messages appear.
+10. Try ordering more than available stock and confirm the server rejects the order.
+
+### Important Files
+
+```text
+app/checkout/page.tsx                         # Checkout page shell
+components/checkout/CheckoutPageClient.tsx    # Client checkout form and submit flow
+app/api/orders/route.ts                       # Order creation API route
+app/order-success/[orderNumber]/page.tsx      # Order confirmation page
+lib/checkout.ts                               # Server-side checkout validation and transaction logic
+types/checkout.ts                             # Checkout request and response types
+```
+
+The checkout intentionally stays simple for the RAD MVP: no card payments, no payment gateway, no email notifications, and no delivery tracking integration.

@@ -49,3 +49,4 @@ export const ORDER_STATUSES = {
 // Currency
 export const CURRENCY = 'LKR';
 export const CURRENCY_SYMBOL = 'LKR';
+export const DELIVERY_FEE = 450;

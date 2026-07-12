@@ -1,0 +1,1 @@
+export { CheckoutPageClient } from './CheckoutPageClient';
