@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function CartPage() {
   return (
-    <PageContainer className="py-14">
+    <PageContainer className="py-10 md:py-14">
       <SectionHeader
         eyebrow="Shopping cart"
         title="Review your selected items"

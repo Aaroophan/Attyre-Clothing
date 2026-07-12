@@ -148,85 +148,77 @@ export default async function Home() {
   const salePreview = saleProducts[0];
 
   return (
-    <div className="bg-[#f7fbfd]">
-      <section className="overflow-hidden bg-gradient-to-br from-primary-darker via-dark to-primary-darker text-white">
-        <PageContainer className="grid gap-12 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:py-24">
-          <div>
-            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-primary">
+    <div className="bg-[#f6f8fb]">
+      <section className="bg-gradient-to-br from-dark via-primary-darker to-slate-900 text-white">
+        <PageContainer className="grid gap-10 py-12 md:py-16 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+          <div className="max-w-2xl">
+            <p className="mb-3 text-xs font-black uppercase tracking-[0.28em] text-primary">
               Online clothing store
             </p>
-            <h1 className="max-w-3xl text-5xl font-black tracking-tight md:text-6xl">
+            <h1 className="text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">
               Build your everyday wardrobe with {SITE_NAME}.
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-gray-200">
-              Shop curated menswear, womenswear, accessories, sale picks, and new arrivals through a clean storefront designed for small-to-medium clothing businesses.
+            <p className="mt-5 text-base leading-8 text-slate-200 sm:text-lg">
+              A clean clothing storefront for browsing menswear, womenswear, accessories, sale picks, and new arrivals with a simple Cash on Delivery shopping flow.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/shop" className="btn-primary bg-white text-primary-darker hover:bg-gray-100">
-                Shop Collection
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <Link href="/shop" className="btn-primary bg-white text-primary-darker hover:bg-slate-100 hover:text-primary-darker">
+                Shop collection
               </Link>
-              <Link href="/shop?category=new-arrivals" className="btn-secondary bg-white/10 text-white hover:bg-white/20">
-                View New Arrivals
+              <Link href="/shop?category=new-arrivals" className="btn-secondary border-white/20 bg-white/10 text-white hover:bg-white/20 hover:text-white">
+                View new arrivals
               </Link>
             </div>
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
-              <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
-                <p className="text-2xl font-black">12+</p>
-                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-white/70">Seed products</p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
-                <p className="text-2xl font-black">5</p>
-                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-white/70">Categories</p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
-                <p className="text-2xl font-black">COD</p>
-                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-white/70">Checkout plan</p>
-              </div>
+            <div className="mt-8 grid gap-3 sm:grid-cols-3">
+              {[
+                ['12+', 'Seed products'],
+                ['5', 'Categories'],
+                ['COD', 'Checkout plan'],
+              ].map(([value, label]) => (
+                <div key={label} className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
+                  <p className="text-2xl font-black">{value}</p>
+                  <p className="mt-1 text-[0.65rem] font-black uppercase tracking-[0.18em] text-white/70">{label}</p>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-white/10 bg-white/10 p-4 shadow-2xl backdrop-blur sm:p-6">
-            <div className="rounded-[1.5rem] bg-white p-5 text-dark shadow-xl sm:p-6">
+          <div className="mx-auto w-full max-w-md rounded-[1.75rem] border border-white/10 bg-white/10 p-4 shadow-2xl backdrop-blur">
+            <div className="rounded-[1.35rem] bg-white p-5 text-dark shadow-lg">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.25em] text-primary-darker">
-                    Featured edit
-                  </p>
-                  <p className="mt-2 text-2xl font-black tracking-tight">
-                    {heroProduct?.name ?? 'Attyre starter catalog'}
-                  </p>
+                  <p className="text-xs font-black uppercase tracking-[0.22em] text-primary-darker">Featured edit</p>
+                  <p className="mt-2 text-xl font-black tracking-tight">{heroProduct?.name ?? 'Attyre starter catalog'}</p>
                 </div>
-                <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.15em] text-primary-darker">
-                  New
-                </span>
+                <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-primary-darker">New</span>
               </div>
 
               {heroProduct ? (
-                <div className="mt-6 overflow-hidden rounded-3xl bg-gray-100">
+                <div className="mt-5 overflow-hidden rounded-3xl bg-slate-100">
                   <Image
                     src={heroProduct.image}
                     alt={`${heroProduct.name} storefront feature`}
-                    width={560}
-                    height={640}
-                    className="h-80 w-full object-cover"
+                    width={520}
+                    height={460}
+                    className="aspect-[4/3] w-full object-cover"
                     priority
                   />
                 </div>
               ) : (
-                <div className="mt-6 rounded-3xl bg-primary/10 p-10 text-center text-sm font-semibold text-primary-darker">
+                <div className="mt-5 rounded-3xl bg-sky-50 p-8 text-center text-sm font-semibold text-primary-darker">
                   Seed the database to show featured product imagery here.
                 </div>
               )}
 
-              <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-sm text-gray-500">Starting from</p>
+                  <p className="text-sm text-slate-500">Starting from</p>
                   <p className="text-2xl font-black text-primary-darker">
                     {heroProduct ? formatPrice(heroProduct.salePrice ?? heroProduct.price, CURRENCY) : formatPrice(0, CURRENCY)}
                   </p>
                 </div>
-                <Link href={heroProduct ? `/shop/${heroProduct.slug}` : '/shop'} className="btn-primary inline-flex justify-center">
-                  View Product
+                <Link href={heroProduct ? `/shop/${heroProduct.slug}` : '/shop'} className="btn-primary">
+                  View product
                 </Link>
               </div>
             </div>
@@ -234,14 +226,14 @@ export default async function Home() {
         </PageContainer>
       </section>
 
-      <PageContainer className="py-16">
+      <PageContainer className="section-space">
         {usingFallbackData ? (
-          <div className="mb-10 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
+          <div className="mb-8 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
             The homepage is using bundled preview data because the live catalog could not be loaded. Run <strong>npm run seed</strong> after configuring MongoDB to display database-backed products.
           </div>
         ) : null}
 
-        <section className="mb-16">
+        <section className="mb-14 md:mb-16">
           <SectionHeader
             eyebrow="Browse by category"
             title="Shop by style lane"
@@ -251,7 +243,7 @@ export default async function Home() {
           />
 
           {categories.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {categories.map((category) => (
                 <CategoryPreviewCard
                   key={category.id}
@@ -263,58 +255,33 @@ export default async function Home() {
               ))}
             </div>
           ) : (
-            <EmptyState
-              title="No categories yet"
-              description="Categories will appear here after the store data is seeded."
-              actionLabel="Go to shop"
-              actionHref="/shop"
-            />
+            <EmptyState title="No categories yet" description="Categories will appear here after the store data is seeded." actionLabel="Go to shop" actionHref="/shop" />
           )}
         </section>
 
-        <section className="mb-16 overflow-hidden rounded-[2rem] bg-dark text-white shadow-xl">
-          <div className="grid gap-8 p-8 md:grid-cols-[1.1fr_0.9fr] md:items-center md:p-10 lg:p-12">
+        <section className="mb-14 overflow-hidden rounded-[1.75rem] bg-dark text-white shadow-xl md:mb-16">
+          <div className="grid gap-6 p-6 md:grid-cols-[1.15fr_0.85fr] md:items-center md:p-8 lg:p-10">
             <div>
-              <p className="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-primary">
-                Sale preview
-              </p>
-              <h2 className="text-3xl font-black tracking-tight md:text-4xl">
-                Launch-ready sale section for budget-conscious shoppers.
-              </h2>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-white/75">
+              <p className="mb-3 text-xs font-black uppercase tracking-[0.24em] text-primary">Sale preview</p>
+              <h2 className="text-2xl font-black tracking-tight sm:text-3xl md:text-4xl">Launch-ready sale section for budget-conscious shoppers.</h2>
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-white/75 sm:text-base">
                 Attyre includes sale-ready product data so the storefront can demonstrate discounts, original prices, and category-based shopping without adding payment gateway complexity yet.
               </p>
-              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                <Link href="/shop?category=sale" className="btn-primary bg-white text-primary-darker hover:bg-gray-100">
-                  Browse Sale
-                </Link>
-                {salePreview ? (
-                  <Link href={`/shop/${salePreview.slug}`} className="btn-secondary bg-white/10 text-white hover:bg-white/20">
-                    View {salePreview.name}
-                  </Link>
-                ) : null}
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                <Link href="/shop?category=sale" className="btn-primary bg-white text-primary-darker hover:bg-slate-100 hover:text-primary-darker">Browse sale</Link>
+                {salePreview ? <Link href={`/shop/${salePreview.slug}`} className="btn-secondary border-white/20 bg-white/10 text-white hover:bg-white/20 hover:text-white">View {salePreview.name}</Link> : null}
               </div>
             </div>
-            <div className="rounded-3xl bg-white/10 p-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-white/60">
-                Example discount
-              </p>
-              <p className="mt-4 text-4xl font-black">
-                {salePreview ? formatPrice(salePreview.salePrice ?? salePreview.price, CURRENCY) : 'Sale items'}
-              </p>
-              {salePreview?.salePrice ? (
-                <p className="mt-2 text-lg text-white/60 line-through">
-                  {formatPrice(salePreview.price, CURRENCY)}
-                </p>
-              ) : null}
-              <p className="mt-4 text-sm leading-6 text-white/70">
-                {salePreview?.description ?? 'Seed sale products to show discounted launch items here.'}
-              </p>
+            <div className="rounded-3xl bg-white/10 p-5">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-white/60">Example discount</p>
+              <p className="mt-3 text-3xl font-black">{salePreview ? formatPrice(salePreview.salePrice ?? salePreview.price, CURRENCY) : 'Sale items'}</p>
+              {salePreview?.salePrice ? <p className="mt-1 text-base text-white/60 line-through">{formatPrice(salePreview.price, CURRENCY)}</p> : null}
+              <p className="mt-4 text-sm leading-6 text-white/70">{salePreview?.description ?? 'Seed sale products to show discounted launch items here.'}</p>
             </div>
           </div>
         </section>
 
-        <section className="mb-16">
+        <section className="mb-14 md:mb-16">
           <SectionHeader
             eyebrow="Featured products"
             title="Selected pieces for the first release"
@@ -324,7 +291,7 @@ export default async function Home() {
           />
 
           {featuredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {featuredProducts.map((product) => (
                 <HomeProductCard
                   key={product.id}
@@ -340,50 +307,37 @@ export default async function Home() {
               ))}
             </div>
           ) : (
-            <EmptyState
-              title="No featured products yet"
-              description="Featured products will appear here after the product catalog is seeded."
-              actionLabel="Browse shop"
-              actionHref="/shop"
-            />
+            <EmptyState title="No featured products yet" description="Featured products will appear here after the product catalog is seeded." actionLabel="Browse shop" actionHref="/shop" />
           )}
         </section>
 
-        <section className="mb-16">
+        <section className="mb-14 md:mb-16">
           <SectionHeader
             eyebrow="Store benefits"
             title="Built for a simple SME clothing workflow"
             description="The landing page communicates the core business value while keeping the first application release focused and testable."
           />
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {trustHighlights.map((highlight) => (
-              <div key={highlight.title} className="card p-6">
-                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-xl font-black text-primary-darker">
-                  ✓
-                </div>
-                <h3 className="text-lg font-bold text-dark">{highlight.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-gray-600">{highlight.description}</p>
+              <div key={highlight.title} className="card p-5">
+                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-50 text-xl font-black text-primary-darker">✓</div>
+                <h3 className="text-base font-black text-dark">{highlight.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{highlight.description}</p>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="rounded-[2rem] border border-primary/10 bg-white p-8 shadow-sm md:p-10">
-          <div className="grid gap-8 md:grid-cols-[1fr_auto] md:items-center">
+        <section className="card p-6 md:p-8">
+          <div className="grid gap-6 md:grid-cols-[1fr_auto] md:items-center">
             <div>
-              <p className="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-primary-darker">
-                Ready for the next iteration
-              </p>
-              <h2 className="text-3xl font-black tracking-tight text-dark">
-                Continue into the full shopping flow.
-              </h2>
-              <p className="mt-3 max-w-2xl text-base leading-7 text-gray-600">
-                This storefront now gives the project a complete landing experience. The next issues can connect the shop page, product details, cart, and Cash on Delivery checkout around the seeded catalog.
+              <p className="mb-2 text-xs font-black uppercase tracking-[0.24em] text-primary-darker">Ready for the next iteration</p>
+              <h2 className="text-2xl font-black tracking-tight text-dark sm:text-3xl">Continue into the full shopping flow.</h2>
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
+                This storefront now gives the project a complete landing experience around the seeded catalog, product details, cart, and Cash on Delivery checkout path.
               </p>
             </div>
-            <Link href="/shop" className="btn-primary inline-flex justify-center">
-              Start Shopping
-            </Link>
+            <Link href="/shop" className="btn-primary">Start shopping</Link>
           </div>
         </section>
       </PageContainer>

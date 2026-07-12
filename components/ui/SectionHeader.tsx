@@ -16,26 +16,23 @@ export function SectionHeader({
   actionHref,
 }: SectionHeaderProps) {
   return (
-    <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <div className="mb-7 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
       <div className="max-w-2xl">
         {eyebrow ? (
-          <p className="mb-2 text-sm font-semibold uppercase tracking-[0.25em] text-primary-darker">
+          <p className="mb-2 text-xs font-black uppercase tracking-[0.24em] text-primary-darker">
             {eyebrow}
           </p>
         ) : null}
-        <h2 className="text-3xl font-bold tracking-tight text-dark md:text-4xl">
+        <h2 className="text-2xl font-black tracking-tight text-dark sm:text-3xl md:text-4xl">
           {title}
         </h2>
         {description ? (
-          <p className="mt-3 text-base leading-7 text-gray-600">{description}</p>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">{description}</p>
         ) : null}
       </div>
 
       {actionHref && actionLabel ? (
-        <Link
-          href={actionHref}
-          className="inline-flex w-fit items-center justify-center rounded-full border border-primary/30 px-5 py-2 text-sm font-semibold text-primary-darker transition hover:border-primary hover:bg-primary/10"
-        >
+        <Link href={actionHref} className="btn-secondary w-fit">
           {actionLabel}
         </Link>
       ) : null}

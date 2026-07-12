@@ -203,14 +203,14 @@ export default async function ProductDetailsPage({ params }: ProductDetailsPageP
   const displayPrice = product.salePrice ?? product.price;
 
   return (
-    <PageContainer className="py-14">
+    <PageContainer className="py-10 md:py-14">
       {usingFallbackData ? (
         <div className="mb-8 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
           This product page is using bundled seed data. Run <strong>npm run seed</strong> and check your MongoDB connection to load the live catalog.
         </div>
       ) : null}
 
-      <nav className="mb-8 flex flex-wrap items-center gap-2 text-sm font-semibold text-gray-500" aria-label="Product breadcrumb">
+      <nav className="mb-6 flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-500" aria-label="Product breadcrumb">
         <Link href="/" className="transition hover:text-primary-darker">Home</Link>
         <span>/</span>
         <Link href="/shop" className="transition hover:text-primary-darker">Shop</Link>
@@ -222,76 +222,64 @@ export default async function ProductDetailsPage({ params }: ProductDetailsPageP
         <span className="text-dark">{product.name}</span>
       </nav>
 
-      <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+      <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
         <div className="space-y-5">
-          <div className="relative overflow-hidden rounded-[2rem] bg-gray-100 shadow-sm">
+          <div className="relative overflow-hidden rounded-[1.75rem] bg-slate-100 shadow-sm">
             <Image
               src={product.image}
               alt={`${product.name} product image`}
-              width={820}
-              height={980}
-              className="h-[30rem] w-full object-cover md:h-[42rem]"
+              width={760}
+              height={620}
+              className="aspect-[4/3] w-full object-cover"
               priority
             />
-            <div className="absolute left-5 top-5 flex flex-wrap gap-2">
+            <div className="absolute left-4 top-4 flex flex-wrap gap-2">
               {product.salePrice ? (
-                <span className="rounded-full bg-primary-darker px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-white shadow-sm">
+                <span className="rounded-full bg-primary-darker px-3 py-1.5 text-[0.65rem] font-black uppercase tracking-[0.14em] text-white shadow-sm">
                   Sale
                 </span>
               ) : null}
-              <span className={`rounded-full border px-4 py-2 text-xs font-black uppercase tracking-[0.18em] shadow-sm ${getStockTone(product.stock)}`}>
+              <span className={`rounded-full border px-3 py-1.5 text-[0.65rem] font-black uppercase tracking-[0.14em] shadow-sm ${getStockTone(product.stock)}`}>
                 {getStockLabel(product.stock)}
               </span>
             </div>
           </div>
 
-          <div className="grid gap-4 rounded-[1.75rem] border border-gray-100 bg-white p-5 shadow-sm sm:grid-cols-3">
+          <div className="grid gap-3 rounded-[1.5rem] border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-3">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-gray-400">Category</p>
-              <p className="mt-1 font-bold text-dark">{product.categoryName}</p>
+              <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-slate-400">Category</p>
+              <p className="mt-1 text-sm font-bold text-dark">{product.categoryName}</p>
             </div>
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-gray-400">SKU</p>
-              <p className="mt-1 font-bold text-dark">{product.sku ?? 'Attyre item'}</p>
+              <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-slate-400">SKU</p>
+              <p className="mt-1 text-sm font-bold text-dark">{product.sku ?? 'Attyre item'}</p>
             </div>
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-gray-400">Added</p>
-              <p className="mt-1 font-bold text-dark">{formatDate(product.createdAt)}</p>
+              <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-slate-400">Added</p>
+              <p className="mt-1 text-sm font-bold text-dark">{formatDate(product.createdAt)}</p>
             </div>
           </div>
         </div>
 
-        <div className="space-y-6">
-          <div className="rounded-[2rem] bg-white p-7 shadow-sm md:p-8">
-            <p className="text-sm font-black uppercase tracking-[0.25em] text-primary-darker">
-              {product.categoryName}
-            </p>
-            <h1 className="mt-3 text-4xl font-black tracking-tight text-dark md:text-5xl">
-              {product.name}
-            </h1>
-            <p className="mt-5 text-base leading-8 text-gray-600">
-              {product.description}
-            </p>
+        <div className="space-y-5">
+          <div className="rounded-[1.75rem] bg-white p-6 shadow-sm md:p-7">
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-primary-darker">{product.categoryName}</p>
+            <h1 className="mt-3 text-3xl font-black tracking-tight text-dark sm:text-4xl lg:text-5xl">{product.name}</h1>
+            <p className="mt-4 text-sm leading-7 text-slate-600 sm:text-base">{product.description}</p>
 
-            <div className="mt-7 flex flex-wrap items-center gap-3 border-y border-gray-100 py-5">
-              <span className="text-3xl font-black text-primary-darker">
-                {formatPrice(displayPrice, CURRENCY)}
-              </span>
-              {product.salePrice ? (
-                <span className="text-lg font-semibold text-gray-400 line-through">
-                  {formatPrice(product.price, CURRENCY)}
-                </span>
-              ) : null}
+            <div className="mt-6 flex flex-wrap items-center gap-3 border-y border-slate-100 py-5">
+              <span className="text-3xl font-black text-primary-darker">{formatPrice(displayPrice, CURRENCY)}</span>
+              {product.salePrice ? <span className="text-base font-semibold text-slate-400 line-through">{formatPrice(product.price, CURRENCY)}</span> : null}
             </div>
 
-            <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl bg-gray-50 p-4">
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-gray-400">Available sizes</p>
-                <p className="mt-2 font-semibold text-dark">{product.sizes.join(', ') || 'One size'}</p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl bg-slate-50 p-4">
+                <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-slate-400">Available sizes</p>
+                <p className="mt-2 text-sm font-semibold text-dark">{product.sizes.join(', ') || 'One size'}</p>
               </div>
-              <div className="rounded-2xl bg-gray-50 p-4">
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-gray-400">Available colors</p>
-                <p className="mt-2 font-semibold text-dark">{product.colors.join(', ') || 'Standard'}</p>
+              <div className="rounded-2xl bg-slate-50 p-4">
+                <p className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-slate-400">Available colors</p>
+                <p className="mt-2 text-sm font-semibold text-dark">{product.colors.join(', ') || 'Standard'}</p>
               </div>
             </div>
           </div>
@@ -310,23 +298,23 @@ export default async function ProductDetailsPage({ params }: ProductDetailsPageP
         </div>
       </div>
 
-      <section className="mt-16 grid gap-5 md:grid-cols-3">
-        <div className="rounded-[1.5rem] border border-primary/10 bg-primary/5 p-6">
-          <p className="text-sm font-black uppercase tracking-[0.18em] text-primary-darker">Payment</p>
-          <p className="mt-3 text-sm leading-6 text-gray-700">Cash on Delivery is supported for the RAD MVP checkout flow.</p>
+      <section className="mt-10 grid gap-4 md:grid-cols-3">
+        <div className="rounded-[1.35rem] border border-sky-100 bg-sky-50 p-5">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-primary-darker">Payment</p>
+          <p className="mt-2 text-sm leading-6 text-slate-700">Cash on Delivery is supported for the RAD MVP checkout flow.</p>
         </div>
-        <div className="rounded-[1.5rem] border border-primary/10 bg-primary/5 p-6">
-          <p className="text-sm font-black uppercase tracking-[0.18em] text-primary-darker">Stock aware</p>
-          <p className="mt-3 text-sm leading-6 text-gray-700">Quantity controls prevent customers from selecting more than available stock.</p>
+        <div className="rounded-[1.35rem] border border-sky-100 bg-sky-50 p-5">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-primary-darker">Stock aware</p>
+          <p className="mt-2 text-sm leading-6 text-slate-700">Quantity controls prevent customers from selecting more than available stock.</p>
         </div>
-        <div className="rounded-[1.5rem] border border-primary/10 bg-primary/5 p-6">
-          <p className="text-sm font-black uppercase tracking-[0.18em] text-primary-darker">Simple variants</p>
-          <p className="mt-3 text-sm leading-6 text-gray-700">Size and color choices are intentionally simple for the small clothing-store scope.</p>
+        <div className="rounded-[1.35rem] border border-sky-100 bg-sky-50 p-5">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-primary-darker">Simple variants</p>
+          <p className="mt-2 text-sm leading-6 text-slate-700">Size and color choices are intentionally simple for the small clothing-store scope.</p>
         </div>
       </section>
 
       {relatedProducts.length > 0 ? (
-        <section className="mt-16">
+        <section className="mt-12 md:mt-16">
           <SectionHeader
             eyebrow="Related styles"
             title="More from this category"
@@ -334,9 +322,7 @@ export default async function ProductDetailsPage({ params }: ProductDetailsPageP
             actionLabel="View all products"
             actionHref="/shop"
           />
-          <div className="mt-8">
-            <ProductGrid products={relatedProducts} hasFilters={false} />
-          </div>
+          <ProductGrid products={relatedProducts} hasFilters={false} />
         </section>
       ) : null}
     </PageContainer>

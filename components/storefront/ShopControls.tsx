@@ -16,24 +16,12 @@ export interface ShopControlsProps {
   filteredProducts: number;
 }
 
-function buildShopHref(params: {
-  category?: string;
-  q?: string;
-  sort?: string;
-}) {
+function buildShopHref(params: { category?: string; q?: string; sort?: string }) {
   const query = new URLSearchParams();
 
-  if (params.category) {
-    query.set('category', params.category);
-  }
-
-  if (params.q) {
-    query.set('q', params.q);
-  }
-
-  if (params.sort && params.sort !== 'newest') {
-    query.set('sort', params.sort);
-  }
+  if (params.category) query.set('category', params.category);
+  if (params.q) query.set('q', params.q);
+  if (params.sort && params.sort !== 'newest') query.set('sort', params.sort);
 
   const queryString = query.toString();
   return queryString ? `/shop?${queryString}` : '/shop';
@@ -48,68 +36,60 @@ export function ShopControls({
   filteredProducts,
 }: ShopControlsProps) {
   return (
-    <div className="rounded-[2rem] border border-primary/10 bg-white p-5 shadow-sm md:p-6">
-      <div className="grid gap-4 lg:grid-cols-[1.1fr_0.7fr_auto] lg:items-end">
-        <form action="/shop" className="grid gap-3 md:grid-cols-[1fr_auto] lg:col-span-2">
-          {selectedCategory ? <input type="hidden" name="category" value={selectedCategory} /> : null}
-          <div>
-            <label htmlFor="shop-search" className="text-xs font-black uppercase tracking-[0.2em] text-gray-500">
-              Search products
-            </label>
-            <input
-              id="shop-search"
-              name="q"
-              type="search"
-              defaultValue={searchQuery}
-              placeholder="Search shirts, dresses, belts..."
-              className="mt-2 h-12 w-full rounded-full border border-gray-200 bg-white px-5 text-sm font-medium text-dark outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-            />
-          </div>
+    <div className="card p-4 sm:p-5 md:p-6">
+      <form action="/shop" className="grid gap-4 lg:grid-cols-[1fr_14rem_auto_auto] lg:items-end">
+        {selectedCategory ? <input type="hidden" name="category" value={selectedCategory} /> : null}
+        <div>
+          <label htmlFor="shop-search" className="text-xs font-black uppercase tracking-[0.2em] text-slate-500">
+            Search products
+          </label>
+          <input
+            id="shop-search"
+            name="q"
+            type="search"
+            defaultValue={searchQuery}
+            placeholder="Search shirts, dresses, belts..."
+            className="mt-2 h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-medium text-dark outline-none transition focus:border-primary focus:ring-4 focus:ring-sky-100"
+          />
+        </div>
 
-          <div>
-            <label htmlFor="shop-sort" className="text-xs font-black uppercase tracking-[0.2em] text-gray-500">
-              Sort by
-            </label>
-            <select
-              id="shop-sort"
-              name="sort"
-              defaultValue={sort}
-              className="mt-2 h-12 w-full rounded-full border border-gray-200 bg-white px-5 text-sm font-bold text-dark outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 md:w-52"
-            >
-              <option value="newest">Newest first</option>
-              <option value="price-asc">Price: low to high</option>
-              <option value="price-desc">Price: high to low</option>
-              <option value="name-asc">Name: A to Z</option>
-            </select>
-          </div>
-
-          <button
-            type="submit"
-            className="h-12 rounded-full bg-primary-darker px-6 text-sm font-black text-white transition hover:bg-primary md:self-end"
+        <div>
+          <label htmlFor="shop-sort" className="text-xs font-black uppercase tracking-[0.2em] text-slate-500">
+            Sort by
+          </label>
+          <select
+            id="shop-sort"
+            name="sort"
+            defaultValue={sort}
+            className="mt-2 h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-dark outline-none transition focus:border-primary focus:ring-4 focus:ring-sky-100"
           >
-            Apply
-          </button>
-        </form>
+            <option value="newest">Newest first</option>
+            <option value="price-asc">Price: low to high</option>
+            <option value="price-desc">Price: high to low</option>
+            <option value="name-asc">Name: A to Z</option>
+          </select>
+        </div>
 
-        <Link
-          href="/shop"
-          className="inline-flex h-12 items-center justify-center rounded-full border border-gray-200 px-5 text-sm font-black text-dark transition hover:border-primary hover:text-primary-darker"
-        >
-          Clear filters
+        <button type="submit" className="btn-primary h-12">
+          Apply
+        </button>
+
+        <Link href="/shop" className="btn-secondary h-12">
+          Clear
         </Link>
-      </div>
+      </form>
 
-      <div className="mt-6 flex flex-wrap gap-2">
+      <div className="mt-5 flex flex-wrap gap-2">
         <Link
           href={buildShopHref({ q: searchQuery, sort })}
           className={cn(
-            'rounded-full border px-4 py-2 text-sm font-bold transition',
+            'rounded-full border px-3.5 py-2 text-sm font-bold transition',
             !selectedCategory
               ? 'border-primary-darker bg-primary-darker text-white'
-              : 'border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary-darker',
+              : 'border-slate-200 bg-white text-slate-700 hover:border-primary hover:text-primary-darker',
           )}
         >
-          All products <span className="opacity-75">({totalProducts})</span>
+          All <span className="opacity-75">({totalProducts})</span>
         </Link>
 
         {categories.map((category) => (
@@ -117,10 +97,10 @@ export function ShopControls({
             key={category.slug}
             href={buildShopHref({ category: category.slug, q: searchQuery, sort })}
             className={cn(
-              'rounded-full border px-4 py-2 text-sm font-bold transition',
+              'rounded-full border px-3.5 py-2 text-sm font-bold transition',
               selectedCategory === category.slug
                 ? 'border-primary-darker bg-primary-darker text-white'
-                : 'border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary-darker',
+                : 'border-slate-200 bg-white text-slate-700 hover:border-primary hover:text-primary-darker',
             )}
           >
             {category.name} <span className="opacity-75">({category.productCount})</span>
@@ -128,11 +108,11 @@ export function ShopControls({
         ))}
       </div>
 
-      <div className="mt-5 rounded-2xl bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-600">
+      <p className="mt-5 rounded-2xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600">
         Showing <span className="text-primary-darker">{filteredProducts}</span> of{' '}
         <span className="text-primary-darker">{totalProducts}</span> active products.
         {searchQuery ? <span> Search: “{searchQuery}”.</span> : null}
-      </div>
+      </p>
     </div>
   );
 }

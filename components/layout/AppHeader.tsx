@@ -10,8 +10,8 @@ import { cn } from '@/utils';
 const primaryNavItems = [
   { href: '/', label: 'Home' },
   { href: '/shop', label: 'Shop' },
-  { href: '/shop?category=new-arrivals', label: 'New Arrivals' },
-  { href: '/shop?category=sale', label: 'Sale' },
+  { href: '/shop?category=new-arrivals', label: 'New Arrivals', category: 'new-arrivals' },
+  { href: '/shop?category=sale', label: 'Sale', category: 'sale' },
   { href: '/contact', label: 'Contact' },
 ];
 
@@ -28,6 +28,10 @@ function isActiveLink(pathname: string, href: string): boolean {
     return pathname === '/';
   }
 
+  if (cleanHref === '/shop') {
+    return pathname === '/shop' || pathname.startsWith('/shop/');
+  }
+
   return pathname === cleanHref || pathname.startsWith(`${cleanHref}/`);
 }
 
@@ -37,18 +41,16 @@ export function AppHeader() {
   const { totals } = useCart();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-primary/10 bg-white/95 shadow-sm backdrop-blur">
+    <header className="border-b border-slate-200 bg-white">
       <div className="container-max">
-        <div className="flex h-20 items-center justify-between gap-4">
-          <Link href="/" className="group flex items-center gap-3" aria-label="Attyre home">
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-darker text-lg font-black text-white shadow-md shadow-primary/20">
+        <div className="flex min-h-20 items-center justify-between gap-4 py-3">
+          <Link href="/" className="flex shrink-0 items-center gap-3" aria-label="Attyre home">
+            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-darker text-lg font-black text-white shadow-sm">
               A
             </span>
-            <span className="flex flex-col leading-none">
-              <span className="text-2xl font-black tracking-tight text-dark group-hover:text-primary-darker">
-                {SITE_NAME}
-              </span>
-              <span className="mt-1 text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
+            <span className="leading-none">
+              <span className="block text-2xl font-black tracking-tight text-dark">{SITE_NAME}</span>
+              <span className="mt-1 block text-[0.65rem] font-black uppercase tracking-[0.24em] text-slate-500">
                 Clothing Store
               </span>
             </span>
@@ -64,10 +66,10 @@ export function AppHeader() {
                   href={item.href}
                   aria-current={active ? 'page' : undefined}
                   className={cn(
-                    'rounded-full px-4 py-2 text-sm font-semibold transition',
+                    'rounded-full px-3.5 py-2 text-sm font-bold transition',
                     active
-                      ? 'bg-primary/10 text-primary-darker'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-dark'
+                      ? 'bg-sky-50 text-primary-darker'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-dark',
                   )}
                 >
                   {item.label}
@@ -80,7 +82,7 @@ export function AppHeader() {
             {utilityNavItems.map((item) => {
               const active = isActiveLink(pathname, item.href);
               const isCart = item.href === '/cart';
-              const isAdmin = item.href === '/admin';
+              const isLogin = item.href === '/login';
 
               return (
                 <Link
@@ -88,16 +90,18 @@ export function AppHeader() {
                   href={item.href}
                   aria-current={active ? 'page' : undefined}
                   className={cn(
-                    'relative rounded-full px-4 py-2 text-sm font-semibold transition',
-                    isCart && 'border border-primary/30 text-primary-darker hover:bg-primary/10',
-                    isAdmin && 'text-gray-500 hover:bg-gray-100 hover:text-dark',
-                    !isCart && !isAdmin && 'bg-dark text-white hover:bg-primary-darker',
-                    active && 'ring-2 ring-primary/30'
+                    'inline-flex min-h-10 items-center justify-center rounded-full px-4 text-sm font-bold transition',
+                    isCart && 'border border-sky-200 bg-white text-primary-darker hover:bg-sky-50',
+                    isLogin && 'bg-dark text-white hover:bg-primary-darker',
+                    !isCart && !isLogin && 'text-slate-600 hover:bg-slate-100 hover:text-dark',
+                    active && 'ring-2 ring-sky-200',
                   )}
                 >
-                  {item.label}
+                  <span>{item.label}</span>
                   {isCart ? (
-                    <span className="ml-2 rounded-full bg-primary px-2 py-0.5 text-xs text-white">{totals.itemCount}</span>
+                    <span className="ml-2 rounded-full bg-primary px-2 py-0.5 text-xs font-black text-white">
+                      {totals.itemCount}
+                    </span>
                   ) : null}
                 </Link>
               );
@@ -106,52 +110,45 @@ export function AppHeader() {
 
           <button
             type="button"
-            className="inline-flex items-center justify-center rounded-full border border-gray-200 p-3 text-dark transition hover:bg-gray-100 lg:hidden"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-dark transition hover:bg-slate-50 lg:hidden"
             aria-label="Toggle navigation menu"
             aria-expanded={isMenuOpen}
             onClick={() => setIsMenuOpen((current) => !current)}
           >
-            <span className="sr-only">Toggle menu</span>
-            <span className="flex h-5 w-5 flex-col justify-center gap-1.5">
-              <span className="h-0.5 w-full rounded-full bg-current" />
-              <span className="h-0.5 w-full rounded-full bg-current" />
-              <span className="h-0.5 w-full rounded-full bg-current" />
+            <span className="flex w-5 flex-col gap-1.5">
+              <span className="h-0.5 rounded-full bg-current" />
+              <span className="h-0.5 rounded-full bg-current" />
+              <span className="h-0.5 rounded-full bg-current" />
             </span>
           </button>
         </div>
 
         {isMenuOpen ? (
-          <div className="border-t border-gray-100 py-4 lg:hidden">
-            <nav className="grid gap-2" aria-label="Mobile navigation">
-              {[...primaryNavItems, ...utilityNavItems].map((item) => {
-                const active = isActiveLink(pathname, item.href);
+          <nav className="grid gap-2 border-t border-slate-100 py-4 lg:hidden" aria-label="Mobile navigation">
+            {[...primaryNavItems, ...utilityNavItems].map((item) => {
+              const active = isActiveLink(pathname, item.href);
 
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    aria-current={active ? 'page' : undefined}
-                    onClick={() => setIsMenuOpen(false)}
-                    className={cn(
-                      'rounded-xl px-4 py-3 text-sm font-semibold transition',
-                      active
-                        ? 'bg-primary/10 text-primary-darker'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    )}
-                  >
-                    <span className="flex items-center justify-between gap-3">
-                      <span>{item.label}</span>
-                      {item.href === '/cart' ? (
-                        <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-black text-white">
-                          {totals.itemCount}
-                        </span>
-                      ) : null}
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={active ? 'page' : undefined}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={cn(
+                    'flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-bold transition',
+                    active ? 'bg-sky-50 text-primary-darker' : 'text-slate-700 hover:bg-slate-50',
+                  )}
+                >
+                  <span>{item.label}</span>
+                  {item.href === '/cart' ? (
+                    <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-black text-white">
+                      {totals.itemCount}
                     </span>
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
+                  ) : null}
+                </Link>
+              );
+            })}
+          </nav>
         ) : null}
       </div>
     </header>

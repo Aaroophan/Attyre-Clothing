@@ -182,7 +182,7 @@ export default async function ShopPage({
   const hasFilters = Boolean(selectedCategory || searchQuery || sort !== 'newest');
 
   return (
-    <PageContainer className="py-14">
+    <PageContainer className="py-10 md:py-14">
       {usingFallbackData ? (
         <div className="mb-8 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
           The shop is using bundled seed data. Run <strong>npm run seed</strong> and check your MongoDB connection to load the live catalog.

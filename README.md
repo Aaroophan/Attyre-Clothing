@@ -467,3 +467,37 @@ Manual checks:
 - Remove one item.
 - Clear the cart.
 - Confirm empty cart state appears.
+
+## UI polish correction pass
+
+After reviewing the submitted screenshots, the previous responsive pass was not acceptable: spacing was inconsistent, product cards were too large, the header repeated during full-page captures because it was sticky, and several buttons/cards did not read as a clean storefront.
+
+This correction pass standardizes:
+
+- a max-width page container,
+- non-sticky header behavior,
+- compact product card image ratios,
+- consistent card, button, and section spacing,
+- responsive home, shop, product detail, cart, and checkout layouts,
+- cleaner footer spacing and corrected category links.
+
+Recommended visual checks:
+
+```text
+/
+/shop
+/shop?category=sale
+/shop/classic-white-shirt
+/shop/formal-chinos
+/cart
+/checkout
+```
+
+Recommended viewport checks:
+
+```text
+390px mobile
+768px tablet
+1024px laptop
+1440px desktop
+```
