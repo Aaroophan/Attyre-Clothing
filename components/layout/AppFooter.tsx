@@ -11,6 +11,8 @@ const shopLinks = [
 
 const supportLinks = [
   { href: '/contact', label: 'Contact' },
+  { href: '/contact#delivery-payment', label: 'Delivery and payment' },
+  { href: '/contact#support', label: 'Order support' },
   { href: '/cart', label: 'Cart' },
   { href: '/login', label: 'Customer login' },
   { href: '/admin', label: 'Admin' },
@@ -31,9 +33,9 @@ export function AppFooter() {
               {SITE_DESCRIPTION}. Browse curated clothing, place Cash on Delivery orders, and manage essentials through a simple business-ready storefront.
             </p>
             <div className="mt-5 grid gap-2 text-sm text-slate-300">
-              <span>Email: hello@attyre.local</span>
-              <span>Phone: +94 76 000 0000</span>
-              <span>Location: Colombo, Sri Lanka</span>
+              <Link href="/contact" className="transition hover:text-white">Email: hello@attyre.local</Link>
+              <Link href="/contact" className="transition hover:text-white">Phone: +94 76 850 5131</Link>
+              <Link href="/contact" className="transition hover:text-white">Location: Colombo, Sri Lanka</Link>
             </div>
           </div>
 

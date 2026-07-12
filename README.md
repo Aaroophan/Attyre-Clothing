@@ -1029,3 +1029,59 @@ lib/inventory.ts                              # shared inventory status/threshol
 lib/db/products.ts                            # stock filter and stock update helpers
 components/admin/AdminShell.tsx               # inventory link in admin navigation
 ```
+
+## Issue 17 - Customer Contact Page and Basic Store Information Pages
+
+Issue 17 adds a customer-facing contact and store information page so the storefront feels complete without adding unnecessary email-delivery infrastructure.
+
+Implemented route:
+
+```text
+/contact
+```
+
+Implemented features:
+
+- Contact page with Attyre support information.
+- Store email, phone, and Colombo-based location placeholders.
+- Simulated contact form with fields for name, email, subject, and message.
+- Client-side validation for required fields, email format, and short messages.
+- Success confirmation message after valid form submission.
+- Cash on Delivery information section.
+- Delivery information section using the demo delivery fee.
+- Customer support guidance for order, product, account, and delivery questions.
+- Order-support note telling customers to keep their order number ready.
+- Footer support links to Contact, Delivery and payment, and Order support sections.
+- Responsive layout for mobile, tablet, and desktop widths.
+
+Testing flow:
+
+```bash
+npm install
+npm run seed
+npm run dev
+```
+
+1. Open `/contact` and confirm the hero, contact cards, support scope, form, delivery/payment section, and support CTA are visible.
+2. Submit the form empty and confirm validation errors appear.
+3. Enter an invalid email and confirm the email validation message appears.
+4. Enter a valid name, email, subject, and message, then submit the form.
+5. Confirm the simulated success message appears and the form clears.
+6. Click the header Contact link and confirm it opens `/contact`.
+7. Click footer Contact, Delivery and payment, and Order support links.
+8. Check the page at mobile, tablet, and desktop widths to confirm the layout stacks correctly.
+
+Important files:
+
+```text
+app/contact/page.tsx                         # contact and store information page
+components/contact/ContactForm.tsx           # simulated contact form with validation
+components/contact/index.ts                   # contact component exports
+components/layout/AppFooter.tsx              # footer support links to contact sections
+```
+
+Notes:
+
+- The contact form is intentionally simulated and does not send email.
+- Cash on Delivery remains the only payment method in this RAD assignment scope.
+- Delivery information is kept basic because there is no real courier integration in this version.
