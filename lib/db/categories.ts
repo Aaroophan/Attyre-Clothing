@@ -1,10 +1,15 @@
 import type { Filter, UpdateFilter } from 'mongodb';
-import type { CategoryDocument, CreateCategoryInput } from '@/types/database';
+import type { CategoryDocument, CreateCategoryInput, ProductDocument } from '@/types/database';
 import { COLLECTIONS, getCollection } from './collections';
 import { tryObjectId } from './object-id';
 
 async function categoriesCollection() {
   return getCollection<CategoryDocument>(COLLECTIONS.categories);
+}
+
+export interface CategoryUsageSummary {
+  categoryId: string;
+  productCount: number;
 }
 
 export async function listCategories(options: { activeOnly?: boolean } = {}): Promise<CategoryDocument[]> {
@@ -59,6 +64,21 @@ export async function updateCategory(id: string, input: Partial<CreateCategoryIn
   };
 
   const result = await collection.findOneAndUpdate({ _id: objectId }, update, { returnDocument: 'after' });
+
+  if (result) {
+    const products = await getCollection<ProductDocument>(COLLECTIONS.products);
+    await products.updateMany(
+      { categoryId: objectId },
+      {
+        $set: {
+          categoryName: result.name,
+          categorySlug: result.slug,
+          updatedAt: new Date(),
+        },
+      },
+    );
+  }
+
   return result;
 }
 
@@ -75,7 +95,23 @@ export async function deactivateCategory(id: string): Promise<boolean> {
     { $set: { active: false, updatedAt: new Date() } },
   );
 
-  return result.modifiedCount === 1;
+  return result.matchedCount === 1;
+}
+
+export async function reactivateCategory(id: string): Promise<boolean> {
+  const objectId = tryObjectId(id);
+
+  if (!objectId) {
+    return false;
+  }
+
+  const collection = await categoriesCollection();
+  const result = await collection.updateOne(
+    { _id: objectId },
+    { $set: { active: true, updatedAt: new Date() } },
+  );
+
+  return result.matchedCount === 1;
 }
 
 export async function isCategoryUsed(categoryId: string): Promise<boolean> {
@@ -85,8 +121,42 @@ export async function isCategoryUsed(categoryId: string): Promise<boolean> {
     return false;
   }
 
-  const products = await getCollection(COLLECTIONS.products);
+  const products = await getCollection<ProductDocument>(COLLECTIONS.products);
   const count = await products.countDocuments({ categoryId: objectId }, { limit: 1 });
 
   return count > 0;
+}
+
+export async function countProductsByCategory(categoryId: string): Promise<number> {
+  const objectId = tryObjectId(categoryId);
+
+  if (!objectId) {
+    return 0;
+  }
+
+  const products = await getCollection<ProductDocument>(COLLECTIONS.products);
+  return products.countDocuments({ categoryId: objectId });
+}
+
+export async function getCategoryUsageMap(): Promise<Map<string, number>> {
+  const products = await getCollection<ProductDocument>(COLLECTIONS.products);
+  const usage = await products
+    .aggregate<CategoryUsageSummary>([
+      {
+        $group: {
+          _id: '$categoryId',
+          productCount: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          categoryId: { $toString: '$_id' },
+          productCount: 1,
+        },
+      },
+    ])
+    .toArray();
+
+  return new Map(usage.map((item) => [item.categoryId, item.productCount]));
 }

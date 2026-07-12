@@ -846,3 +846,84 @@ components/admin/products/ProductStatusButton.tsx # deactivate/reactivate client
 lib/admin-product-validation.ts              # shared product validation and payload normalization
 lib/db/products.ts                           # create/update/list/status database helpers
 ```
+
+## Issue 14 - Admin Category Management
+
+Issue 14 turns the protected `/admin/categories` placeholder into a working category management area for the Attyre store owner.
+
+Implemented category management features:
+
+- MongoDB-backed admin category listing
+- category search by name, slug, or description
+- active/inactive category status filter
+- category create form
+- category edit form
+- category status activation/deactivation
+- product count per category
+- category usage summary
+- duplicate slug validation
+- required name/slug validation
+- description length validation
+- safe soft-deactivation instead of hard deletion
+- product category name/slug synchronization after category edits
+- active categories remain available in product forms and storefront filters
+- inactive categories are hidden from active category dropdown/filter views but kept for data safety
+
+Admin category routes:
+
+```text
+/admin/categories             # category list, search, filter, status actions
+/admin/categories/new         # create category
+/admin/categories/[id]/edit   # edit category name, slug, description, visibility
+```
+
+Admin category API routes:
+
+```text
+POST  /api/admin/categories        # create category
+PUT   /api/admin/categories/[id]   # update category
+PATCH /api/admin/categories/[id]   # deactivate or reactivate category
+```
+
+Manual testing flow:
+
+```bash
+npm run seed
+npm run dev
+```
+
+Then test:
+
+```text
+/login?next=/admin              # log in as admin
+/admin/categories               # verify category table loads
+/admin/categories/new           # create a new category
+/admin/categories/[id]/edit     # edit existing category details
+/admin/products/new             # confirm active categories appear in product form
+/shop                           # confirm active categories appear in storefront filters
+```
+
+Recommended Issue 14 checks:
+
+1. Create a category with valid data and confirm it appears in `/admin/categories`.
+2. Try creating another category with the same slug and confirm duplicate slug validation appears.
+3. Edit a category name/slug and confirm products using that category stay connected.
+4. Deactivate a category and confirm it is marked inactive in admin.
+5. Confirm inactive categories are not shown in the active category dropdown used by product creation.
+6. Reactivate the category and confirm it becomes available again.
+7. Use `/shop?category=<slug>` to confirm storefront category filtering still works after edits.
+8. Check MongoDB categories and products collections to confirm stored category values changed as expected.
+
+Important files:
+
+```text
+app/admin/categories/page.tsx                  # category list, filters, status actions
+app/admin/categories/new/page.tsx              # create category page
+app/admin/categories/[id]/edit/page.tsx        # edit category page
+app/api/admin/categories/route.ts              # admin create category API
+app/api/admin/categories/[id]/route.ts         # admin update/status API
+components/admin/categories/CategoryForm.tsx   # reusable create/edit form
+components/admin/categories/CategoryStatusButton.tsx # deactivate/reactivate client action
+lib/admin-category-validation.ts               # shared category validation and payload normalization
+lib/db/categories.ts                           # create/update/list/status/usage database helpers
+```
